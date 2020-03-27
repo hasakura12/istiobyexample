@@ -41,7 +41,7 @@ server の gRPC トラフィックメトリクスを Grafana でも見ること�
 
 ![](/images/grpc-server-healthy.png)
 
-また、10秒の delay [fault](https://istio.io/docs/tasks/traffic-management/fault-injection/) を `server` へ挿入するための Istio のトラフィックルールを適用できます。アプリケーションの回復性をテストするために、カオステストシナリオでこのルールを適用できるかもしれません。
+また、10秒遅延させる [fault](https://istio.io/docs/tasks/traffic-management/fault-injection/) を `server` へ挿入するための Istio のトラフィックルールを適用できます。アプリケーションの回復性をテストするために、カオステストシナリオでこのルールを適用できるかもしれません。
 
 ```YAML
 apiVersion: networking.istio.io/v1alpha3
