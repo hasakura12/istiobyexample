@@ -4,21 +4,21 @@ publishDate: "2019-12-31"
 categories: ["Traffic Management"]
 ---
 
-A [service mesh](https://istio.io/docs/concepts/what-is-istio/#what-is-a-service-mesh) often spans one environment— for instance, one Kubernetes cluster. And together, all the connected services in that environment form the management domain of that mesh, from which you can view metrics and set policies.
+[service mesh](https://istio.io/docs/concepts/what-is-istio/#what-is-a-service-mesh) はよく1つの環境 - 例えば、1つの Kubernetes Cluster - 全体に及びます。また、その環境で接続されているすべてのサービスがメッシュの管理ドメインを形成し、そこからメトリクスを見たりポリシーを設定できます。
 
-But what if you are also running services *outside* the cluster, or you depend on external APIs?
+しかし、クラスタの**外部**でもサービスを実行している場合や、外部 API に依存している場合はどうでしょうか。
 
-Have no fear. Istio provides a resource called a [`ServiceEntry`](https://istio.io/docs/concepts/traffic-management/#service-entries) that lets you logically bring external services into your mesh -- even services you don't own.
+恐れることはありません。Istio は [`ServiceEntry`](https://istio.io/docs/concepts/traffic-management/#service-entries) と呼ばれるリソースを提供します。これにより、それがあなたの所有するサービスでなくても外部サービスを論理的にあなたのメッシュへ取り込むことができます。
 
-When you create a ServiceEntry for an external hostname, you can view metrics and traces reaching all the way to that external service. You can even set traffic policies like [retry logic](/retry/) on those external services. Adding `ServiceEntries` effectively expands the reach of your Istio management domain. Let's see an example.
+外部ホスト名の ServiceEntry を作成すると、その外部サービスに到達するまでのメトリクスとトレースを表示できます。これらの外部サービスに[リトライロジック](/retry/)などのトラフィックポリシーを設定することもできます。`ServiceEntries` を追加すると、Istio 管理ドメインの範囲が効果的に広がります。例を見てみましょう。
 
 ![external currency service](/images/ext-currency.png)
 
-Here, we're running a global store website with a `currency` service, responsible for converting product prices based on a user's locality. We rely on an third-party currency conversion API, the [European Central Bank](https://www.ecb.europa.eu/stats/policy_and_exchange_rates/euro_reference_exchange_rates/html/index.en.html), to provide realtime exchange rates.
+ここでは `currency` サービスを備えたグローバルストアウェブサイトを実行しており、ユーザの居住時に基づいて商品の価格を変換します。サードパーティの通過変換 API である [ヨーロッパ中央銀行](https://www.ecb.europa.eu/stats/policy_and_exchange_rates/euro_reference_exchange_rates/html/index.en.html) を使用して、リアルタイムの為替を提供しています。
 
-We want to set a 3-second timeout on all calls from services inside the mesh to this external API. We'll need two Istio resources to do this.
+メッシュ内のサービスからこの外部 API へのすべての読み出しに3秒のタイムアウトを設定します。これを行うには、2つの Istio リソースが必要です。
 
-First, a `ServiceEntry`, which logically adds the European Central Bank's hostname, `ecb.europa.eu`, to the mesh:
+最初に、ヨーロッパの中央銀行ホスト名 `ecb.europa.eu` をメッシュに論理的に追加する `ServiceEntry` です。
 
 ```YAML
 apiVersion: networking.istio.io/v1alpha3
@@ -37,7 +37,7 @@ spec:
     protocol: HTTPS
 ```
 
-Second, a `VirtualService` traffic rule, to set a timeout for calls to the API:
+次に、API 呼び出しのタイムアウトを設定するための `VirtualService` トラフィックルールです。
 
 ```YAML
 apiVersion: networking.istio.io/v1alpha3
@@ -55,13 +55,12 @@ spec:
         weight: 100
 ```
 
-Once we create a ServiceEntry for the currency API, we can automatically see `ecb.europa.eu` in our [Kiali service graph](https://istio.io/docs/tasks/telemetry/kiali/) (and instantly know *who*'s calling it):
+通貨 API の ServiceEntry を作成すると、[Kiali service graph](https://istio.io/docs/tasks/telemetry/kiali/) に自動的に `ecb.europa.eu` が表示されます。（そしてすぐに**誰か**がそれを呼んでいるかを知ります）
 
 ![service graph](/images/ext-servicegraph.png)
 
-
-And we also get an automatic [Grafana dashboard](https://istio.io/docs/tasks/telemetry/metrics/using-istio-dashboard/) for this external service, to view data like response codes and latency:
+また、この外部サービスのための [Grafana dashboard](https://istio.io/docs/tasks/telemetry/metrics/using-istio-dashboard/) も自動的に取得して、レスポンスコードやレイテンシなどのデータを表示します。
 
 ![grafana](/images/ext-grafana.png)
 
-[See the Istio docs](https://istio.io/docs/tasks/traffic-management/egress/egress-control/#manage-traffic-to-external-services) to learn more about managing and securing external services.
+[Istio ドキュメント](https://istio.io/docs/tasks/traffic-management/egress/egress-control/#manage-traffic-to-external-services) を参照して、外部サービスの管理とセキュリティについて学びましょう。
