@@ -6,7 +6,7 @@ categories: ["Traffic Management"]
 
 [gRPC](https://grpc.io/) はサービス間通信のプロトコルで、[HTTP/2](https://www.cncf.io/blog/2018/08/31/grpc-on-http-2-engineering-a-robust-high-performance-protocol/) 上で動作します。[resources](https://en.wikipedia.org/wiki/Representational_state_transfer) ベースの HTTP/1 上で動作する REST と異なり、gRPC は [Service Definitions](https://grpc.io/docs/guides/concepts/) ベースです。データの通信や永続化のための小さなバイナリフォーマットへシリアライズすることができる [protocol buffers](https://developers.google.com/protocol-buffers/) ("proto") と呼ばれるフォーマットで service definitions を指定します。
 
-gRPC では、`.proto` ファイルから [multiple programming languages](https://grpc.io/docs/quickstart/) へのボイラープレートコードを生成することができます。このため、gRPC は polyglot microservices のための理想的な選択となるでしょう。
+gRPC では `.proto` ファイルから [multiple programming languages](https://grpc.io/docs/quickstart/) へのボイラープレートコードを生成することができます。このため、gRPC は 多言語での microservices のための理想的な選択となるでしょう。
 
 gRPC が [TLS](https://grpc.io/docs/guides/auth/) や [client-side load balancing](https://grpc.io/blog/loadbalancing/) のようなユースケースをサポートする一方、それに加えて Istio を gRPC アーキテクチャへ組み込むことはメトリクスの収集、トラフィックルールの追加、[RPC-level authorization](https://istio.io/blog/2018/istio-authorization/#rpc-level-authorization) といった利点があります。すべてのトラフィックタイプに同一の Istio API を使用できるため、トラフィックが HTTP, TCP, gRPC, そして データベースプロトコルの間で混在している場合でも、Istio は 便利な管理レイヤーを追加できます。
 
