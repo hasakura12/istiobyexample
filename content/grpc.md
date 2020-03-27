@@ -14,7 +14,7 @@ gRPC は [TLS](https://grpc.io/docs/guides/auth/) や [client-side load balancin
 
 ![grpc](/images/grpc.png)
 
-このように、`client` と `server` の2つの gRPC サービスがあります。`client` は RPC コールを `server` の `/SayHello` function へ2秒ごとに行います。
+このように、`client` と `server` の2つの gRPC サービスがあります。`client` は RPC コールを `server` の `/SayHello` 関数へ2秒ごとに行います。
 
 Istio を gRPC Kubernetes サービスへ追加するためには要件があります。Kubernetes の Service ports の [labeling](https://istio.io/docs/setup/kubernetes/additional-setup/requirements/) です。server のポートは以下のようにラベル付けされます。
 
