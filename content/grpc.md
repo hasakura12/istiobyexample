@@ -4,7 +4,7 @@ publishDate: "2019-12-31"
 categories: ["Traffic Management"]
 ---
 
-[gRPC](https://grpc.io/) はサービス間通信のプロトコルで、[HTTP/2](https://www.cncf.io/blog/2018/08/31/grpc-on-http-2-engineering-a-robust-high-performance-protocol/) 上で動作します。[resources](https://en.wikipedia.org/wiki/Representational_state_transfer) ベースの HTTP/1 上で動作する REST と異なり、gRPC は [Service Definitions](https://grpc.io/docs/guides/concepts/) ベースです。伝達のための小さなバイナリフォーマットへシリアライズすることができる [protocol buffers](https://developers.google.com/protocol-buffers/) ("proto") と呼ばれるフォーマットで service definitions を指定します。
+[gRPC](https://grpc.io/) はサービス間通信のプロトコルで、[HTTP/2](https://www.cncf.io/blog/2018/08/31/grpc-on-http-2-engineering-a-robust-high-performance-protocol/) 上で動作します。[resources](https://en.wikipedia.org/wiki/Representational_state_transfer) ベースの HTTP/1 上で動作する REST と異なり、gRPC は [Service Definitions](https://grpc.io/docs/guides/concepts/) ベースです。データの通信や永続化のための小さなバイナリフォーマットへシリアライズすることができる [protocol buffers](https://developers.google.com/protocol-buffers/) ("proto") と呼ばれるフォーマットで service definitions を指定します。
 
 gRPC では、`.proto` ファイルから [multiple programming languages](https://grpc.io/docs/quickstart/) へのボイラープレートコードを生成することができます。このため、gRPC は polyglot microservices のための理想的な選択となるでしょう。
 
