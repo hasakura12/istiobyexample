@@ -8,7 +8,7 @@ categories: ["Traffic Management"]
 
 gRPC では `.proto` ファイルから [multiple programming languages](https://grpc.io/docs/quickstart/) へのボイラープレートコードを生成することができます。このため、gRPC は 多言語での microservices のための理想的な選択となるでしょう。
 
-gRPC が [TLS](https://grpc.io/docs/guides/auth/) や [client-side load balancing](https://grpc.io/blog/loadbalancing/) のようなユースケースをサポートする一方、それに加えて Istio を gRPC アーキテクチャへ組み込むことはメトリクスの収集、トラフィックルールの追加、[RPC-level authorization](https://istio.io/blog/2018/istio-authorization/#rpc-level-authorization) といった利点があります。すべてのトラフィックタイプに同一の Istio API を使用できるため、トラフィックが HTTP, TCP, gRPC, そして データベースプロトコルの間で混在している場合でも、Istio は 便利な管理レイヤーを追加できます。
+gRPC は [TLS](https://grpc.io/docs/guides/auth/) や [client-side load balancing](https://grpc.io/blog/loadbalancing/) のようなユースケースをサポートしています。さらに gRPC のアーキテクチャに Istio を組み込むことはメトリクスの収集、トラフィックルールの追加、[RPC-level authorization](https://istio.io/blog/2018/istio-authorization/#rpc-level-authorization) といった利点があります。すべてのトラフィックタイプに同一の Istio API を使用できるため、トラフィックが HTTP, TCP, gRPC, そして データベースプロトコルの間で混在している場合でも、Istio は 便利な管理レイヤーを追加できます。
 
 [Istio](https://istio.io/about/feature-stages/#traffic-management) とそのデータプレーンプロキシーである [Envoy](https://www.envoyproxy.io/docs/envoy/latest/intro/arch_overview/other_protocols/grpc#arch-overview-grpc) の両方が gRPC をサポートします。Istio を用いてどのように gRPC トラフィックを管理するか見てみましょう。
 
