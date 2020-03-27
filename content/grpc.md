@@ -63,7 +63,7 @@ spec:
         subset: v1
 ```
 
-これは client RPC にタイムアウト(`Outgoing Request Duration`)を起こします。
+これにより client RPC にタイムアウト(`Outgoing Request Duration`)を起こします。
 
 ![](/images/grpc-grafana-client-fault-inject.png)
 
