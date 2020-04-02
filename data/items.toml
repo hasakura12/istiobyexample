@@ -94,6 +94,6 @@ thumb = "/images/t-secure-ingress.png"
 url = "/secure-ingress"
 
 [[observability]]
-title = "持ち込みPrometheus"
+title = "Prometheusの持ち込み"
 thumb = "/images/t-prometheus.png"
 url = "/prometheus"
