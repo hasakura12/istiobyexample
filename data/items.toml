@@ -74,7 +74,7 @@ thumb = "/images/t-vms.png"
 url = "/virtual-machines"
 
 [[security]]
-title = "相互TLS"
+title = "Mutual TLS"
 thumb = "/images/t-mtls.png"
 url = "/mtls"
 
