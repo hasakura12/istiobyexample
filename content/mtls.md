@@ -6,8 +6,6 @@ categories: ["Security"]
 
 マイクロサービスアーキテクチャは、ネットワーク上の要求が増えることと、悪意のある当事者がトラフィックを傍受する機会が増えることを意味します。[相互TLS](https://en.wikipedia.org/wiki/Mutual_authentication)（mTLS）認証は、[証明書](https://www.internetsociety.org/deploy360/tls/basics/)を使用してサービストラフィックを暗号化する方法です。
 
-With Istio, you can automate the enforcement of mTLS across all services. Below, we enable mTLS for the entire mesh. Two pods in the cluster, `client` and `server`, are shown establishing a secure connection with the mTLS policy in place.
-
 Istioを使用すると、すべてのサービスにわたるmTLSの適用を自動化できます。以下では、メッシュ全体に対してmTLSを有効にします。クラスター内の2つのPod（ `クライアント` と `サーバー` ）は、mTLSポリシーを使用してセキュアな接続を確立しているところを示しています。
 
 ![Diagram](/images/mtls.png)
