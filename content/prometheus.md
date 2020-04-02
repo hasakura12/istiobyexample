@@ -10,7 +10,7 @@ categories: ["Observability"]
 
 心配要りません。 3つの簡単な手順で、ご自身で管理しているPrometheusをIstioに持ち込むことができます。
 
-まず、**Prometheus構成を更新します。** Prometheusサーバー上の[スクレイプ構成モデル](https://prometheus.io/docs/prometheus/latest/configuration/configuration/#scrape_config…)に依存しており，そこでは　`targets` が `/metrics` エンドポイントを表します。
+まず、**Prometheus構成を更新します。** Prometheusサーバー上の[スクレイプ構成モデル](https://prometheus.io/docs/prometheus/latest/configuration/configuration/#scrape_config…)に依存しており，そこでは `targets` が `/metrics` エンドポイントを表します。
 
 [各Istioコンポーネント](https://istio.io/docs/tasks/observability/metrics/querying-metrics/)の targets を追加します。これらは、[Kubernetes APIサーバーを介して](https://prometheus.io/docs/prometheus/latest/configuration/configuration/#kubernetes_sd_config)取得されます。たとえば、Istioの[Pilot](https://istio.io/docs/concepts/traffic-management/#pilot)コンポーネントの構成は次のとおりです。
 
