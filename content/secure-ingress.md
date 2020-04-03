@@ -4,9 +4,9 @@ publishDate: "2019-12-31"
 categories: ["Security"]
 ---
 
-Kubernetesクラスター上でワークロードを実行している場合、その一部をクラスターの外部に公開する必要があります。[Istio Ingress Gateway](/ingress)は、1つまたは複数のバックエンドホストのインバウンドトラフィックをルーティングできるカスタマイズ可能なプロキシです。しかし、HTTPSとのセキュアなイングレストラフィックの場合はどうでしょうか？
+Kubernetesクラスター上でワークロードを実行している場合、その一部をクラスターの外部に公開する必要があります。[Istio Ingress Gateway](/ingress)は、1つまたは複数のバックエンドホストの内向けのトラフィックをルーティングできるカスタマイズ可能なプロキシです。しかし、HTTPSとのセキュアなイングレストラフィックの場合はどうでしょうか？
 
-Istioは、証明書と鍵をIngress GatewayにマウントすることでTLS Ingressをサポートし、インバウンドトラフィックをクラスター内サービスに安全にルーティングできるようにします。Istioでセキュアなイングレスを設定すると、Ingress GatewayがすべてのTLS操作（ハンドシェイク、証明書/キー交換）を処理し、アプリケーションコードからTLSを切り離すことができます。さらに、TLSトラフィックにIngress Gatewayを使用すると、組織全体の証明書と鍵の管理を一元化および自動化できます。
+Istioは、証明書と鍵をIngress GatewayにマウントすることでTLS Ingressをサポートし、内向けのトラフィックをクラスター内サービスに安全にルーティングできるようにします。Istioでセキュアなイングレスを設定すると、Ingress GatewayがすべてのTLS操作（ハンドシェイク、証明書/キー交換）を処理し、アプリケーションコードからTLSを切り離すことができます。さらに、TLSトラフィックにIngress Gatewayを使用すると、組織全体の証明書と鍵の管理を一元化および自動化できます。
 
 Istioは、2つの方法によるIngress Gatewayの保護をサポートしています。 1つは[file mount](https://istio.io/docs/tasks/traffic-management/ingress/secure-ingress-mount/)による方法で、IngressGatewayの証明書とキーを生成し、KubernetesのSecretとして手動でIngressGatewayにマウントします。2つ目の方法は、IngressGateway PodでIstioプロキシと一緒に実行されるエージェントである[Secrets Discovery Service](https://istio.io/docs/tasks/traffic-management/ingress/secure-ingress-sds/)（SDS）を使用する方法です。SDSエージェントは istio-system ネームスペースを監視して新しいシークレットを探し、ユーザーに代わってそれらをゲートウェイのプロキシにマウントします。ファイルマウント方式と同様に、SDSはサーバー側と相互TLSの両方をサポートします。
 
@@ -38,7 +38,7 @@ kubectl create -n istio-system secret generic inventory-credential  \
 --from-file=cacert=inventory.foocorp.com/2_intermediate/certs/ca-chain.cert.pem
 ```
 
-これで、`frontend` と `inventory` をIstioリソースで公開する準備が整いました。まず、HTTPSトラフィック用にポート `443` をパンチするGatewayリソースを作成します。そのモードに注意してください `mode: MUTUAL` は、インバウンドトラフィックに相互TLSを適用することを示します。また、サービスごとに、作成したSecretに対応する2つの異なる証明書のセットを指定します。
+これで、`frontend` と `inventory` をIstioリソースで公開する準備が整いました。まず、HTTPSトラフィック用にポート `443` をパンチするGatewayリソースを作成します。そのモードに注意してください `mode: MUTUAL` は、内向けのトラフィックに相互TLSを適用することを示します。また、サービスごとに、作成したSecretに対応する2つの異なる証明書のセットを指定します。
 
 ```YAML
 apiVersion: networking.istio.io/v1alpha3
