@@ -12,8 +12,6 @@ Istioの[認証API](https://istio.io/docs/reference/config/security/istio.authen
 
 この例では、ホームページ（ `/` ）とPodヘルスチェック（ `/_healthz` ）を除いて、`frontend` サービスのすべてのルートにJWTが必要です。
 
-In the Istio policy, we specify the path to a test public key (`jwksUri`), which will be mounted into the frontend's sidecar proxy. All unauthenticated requests will receive a `401 - Unauthorized` status from Envoy.
-
 Istioポリシーで、frontendのサイドカープロキシにマウントされるテスト公開鍵（ `jwksUri` ）へのパスを指定します。認証されていないリクエストはすべて、Envoyから `401-Unauthorized` ステータスを受け取ります。
 
 ```YAML
