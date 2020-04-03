@@ -4,15 +4,15 @@ publishDate: "2019-12-31"
 categories: ["Security"]
 ---
 
-A [JSON Web Token](https://jwt.io/introduction/) (JWT) is a type of authentication token used to identify a user to a server application. JWTs contain information about the client caller, and can be used as part of a client session architecture. A [JSON Web Key Set](https://auth0.com/docs/jwks) (JWKS) contains the cryptographic keys used to verify incoming JWTs.
+[JSON Web Token](https://jwt.io/introduction/)（JWT）は、サーバーアプリケーションでユーザーを識別するために使用される認証トークンの一種です。JWTにはクライアントの呼び出し元に関する情報が含まれており、クライアントセッションアーキテクチャの一部として使用できます。[JSON Web Key Set](https://auth0.com/docs/tokens/concepts/jwks)（JWKS）には、受信するJWTの検証に使用される暗号化キーが含まれています。
 
-You can use Istio's [Authentication API](https://istio.io/docs/reference/config/istio.authentication.v1alpha1/#Jwt) to [configure JWT policies](https://istio.io/docs/concepts/security/#origin-authentication) for your services.
+Istioの[認証API](https://istio.io/docs/reference/config/security/istio.authentication.v1alpha1/#Jwt)を使用して、サービスの[JWTポリシーを構成](https://istio.io/docs/concepts/security/#origin-authentication)できます。
 
 ![jwt](/images/jwt.png)
 
-In this example, we require a JWT for all routes in the `frontend` service except for the home page (`/`) and the pod health check (`/_healthz`).
+この例では、ホームページ（ `/` ）とPodヘルスチェック（ `/_healthz` ）を除いて、`frontend` サービスのすべてのルートにJWTが必要です。
 
-In the Istio policy, we specify the path to a test public key (`jwksUri`), which will be mounted into the frontend's sidecar proxy. All unauthenticated requests will receive a `401 - Unauthorized` status from Envoy.
+Istioポリシーで、frontendのサイドカープロキシにマウントされるテスト公開鍵（ `jwksUri` ）へのパスを指定します。認証されていないリクエストはすべて、Envoyから `401-Unauthorized` ステータスを受け取ります。
 
 ```YAML
 apiVersion: "authentication.istio.io/v1alpha1"
@@ -33,4 +33,4 @@ spec:
   principalBinding: USE_ORIGIN
 ```
 
-To learn more and try interactive examples, see the [Istio docs](https://istio.io/docs/tasks/security/authn-policy/#end-user-authentication) and the [istio-samples repo](https://github.com/GoogleCloudPlatform/istio-samples/tree/master/security-intro#add-end-user-jwt-authentication).
+詳細とインタラクティブな例を試すには、[Istio ドキュメント](https://istio.io/docs/tasks/security/authentication/authn-policy/#end-user-authentication)と[istio-samples リポジトリ](https://github.com/GoogleCloudPlatform/istio-samples/tree/master/security-intro#add-end-user-jwt-authentication)をご覧ください。
