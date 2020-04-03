@@ -84,7 +84,7 @@ thumb = "/images/t-jwt.png"
 url = "/jwt"
 
 [[security]]
-title = "Authorization"
+title = "認可"
 thumb = "/images/t-authz.png"
 url = "/authorization"
 
