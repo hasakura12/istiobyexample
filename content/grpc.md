@@ -69,4 +69,4 @@ spec:
 
 gRPC と Istio についてさらに学ぶために:
 - [Istio docs - Traffic Management](https://istio.io/docs/concepts/traffic-management/#traffic-routing-and-configuration)
-- [Blog post - gRPC + Istio + Cloud Internal Load Balancer](https://cloud.google.com/solutions/using-istio-for-internal-load-balancing-of-grpc-services)
+- [ブログ - Istio を使用して内部 gRPC サービスを負荷分散する](https://cloud.google.com/solutions/using-istio-for-internal-load-balancing-of-grpc-services?hl=ja)
