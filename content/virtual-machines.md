@@ -12,7 +12,7 @@ Kubernetesでコンテナ化されたサービスを実行すると、自動ス�
 
 この例では、ローカルライブラリのWebアプリケーションを実行しています。このウェブアプリには複数のバックエンドがあり、すべてKubernetesクラスターで実行されています。 Kubernetesのワークロードの1つ、`inventory` は、PostgreSQLデータベースと通信し、ライブラリに追加された新しい本ごとにレコードを書き込みます。このデータベースは、別のクラウドリージョンの仮想マシンで実行されています。
 
-VMベースのデータベースであるPostgreSQLの完全なIstioの機能を取得するには、VMにIstioサイドカープロキシをインストールし、クラスターで実行されているIstioコントロールプレーンと通信するように構成する必要があります。（これは外部の[ServiceEntries](/external-services)を追加するのとは異なる点に注意してください。）Postgresデータベースを3つのステップでメッシュに追加できます。[GitHubのデモのコマンド](https://github.com/askmeegs/postgres-library/tree/0241acce9d7e2cede0de8ac9baa1338624f716eb#-postgres-library)に従ってください。
+VMベースのデータベースであるPostgreSQLの完全なIstioの機能を取得するには、VMにIstioサイドカープロキシをインストールし、クラスターで実行されているIstioコントロールプレーンと通信するように構成する必要があります。（これは外部の[ServiceEntries](/external-services)を追加するのとは異なる点に注意してください。）Postgresデータベースを3つのステップでメッシュに追加できます。[GitHubのデモコマンド](https://github.com/askmeegs/postgres-library/tree/0241acce9d7e2cede0de8ac9baa1338624f716eb#-postgres-library)に従ってください。
 
 ![](/images/vm-architecture.png)
 
