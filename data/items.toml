@@ -19,7 +19,7 @@ thumb = "/images/t-currency.png"
 url = "/external-services"
 
 [[traffic]]
-title = "Load Balancing"
+title = "負荷分散"
 thumb = "/images/t-lb.png"
 url = "/load-balancing"
 
