@@ -10,7 +10,7 @@ Istioの[認証API](https://istio.io/docs/reference/config/security/istio.authen
 
 ![jwt](/images/jwt.png)
 
-この例では、ホームページ（ `/` ）とPodヘルスチェック（ `/_healthz` ）を除いて、`frontend` サービスのすべてのルートにJWTが必要です。
+この例では、ホームページ（ `/` ）とPodヘルスチェック（ `/_healthz` ）を除く、すべての `frontend` サービスのルートにJWTが必要です。
 
 Istioポリシーで、frontendのサイドカープロキシにマウントされるテスト公開鍵（ `jwksUri` ）へのパスを指定します。認証されていないリクエストはすべて、Envoyから `401-Unauthorized` ステータスを受け取ります。
 
