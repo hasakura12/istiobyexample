@@ -64,7 +64,7 @@ thumb = "/images/t-ptbh.png"
 url = "/monitoring-egress-traffic"
 
 [[traffic]]
-title = "Multiple Traffic Rules"
+title = "複数のトラフィックルール"
 thumb = "/images/t-multiple.png"
 url = "/multiple-traffic-rules"
 
