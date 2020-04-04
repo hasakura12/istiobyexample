@@ -1,18 +1,18 @@
 ---
-title: "Multiple Traffic Rules"
+title: "複数のトラフィックルール"
 publishDate: "2019-12-31"
 categories: ["Traffic Management"]
 ---
 
-Istio supports lots of [traffic management](https://istio.io/docs/concepts/traffic-management/) use cases, from [redirects](https://istio.io/docs/reference/config/networking/virtual-service/#HTTPRewrite) and [traffic splitting](https://istio.io/docs/tasks/traffic-management/traffic-shifting/) to [mirroring](https://istio.io/docs/tasks/traffic-management/mirroring/) and [retry logic](https://istio.io/docs/concepts/traffic-management/#retries). If you've created an Istio [VirtualService](https://istio.io/docs/reference/config/networking/virtual-service/) to define one of these policies for a service, it's easy to add more traffic management rules to the same resource. This example demonstrates how to apply multiple traffic rules to one Kubernetes-based service.
+Istioは、[リダイレクト](https://istio.io/docs/reference/config/networking/virtual-service/#HTTPRewrite)や[トラフィック分割](https://istio.io/docs/tasks/traffic-management/traffic-shifting/)から[ミラーリング](https://istio.io/docs/tasks/traffic-management/mirroring/)や[再試行ロジック](https://istio.io/docs/concepts/traffic-management/#retries)まで、さまざまな[トラフィック管理](https://istio.io/docs/concepts/traffic-management/)の使用例をサポートしています。 Istio [仮想サービス](https://istio.io/docs/reference/config/networking/virtual-service/)を作成して、サービスのためにこれらのポリシーの1つを定義した場合、同じリソースにさらにトラフィック管理ルールを追加するのは簡単です。この例は、1つのKubernetesベースのサービスに複数のトラフィックルールを適用する方法を示しています。
 
-Let's say that we're on the **frontend** engineering team for a newspaper's website. The user-facing frontend service relies on a backend called **articles**, which serves article content and metadata as JSON. But the articles team is refactoring the service in a new language, and they're frequently rolling out new changes. This has resulted in unexpected errors in the frontend, which relied on the behavior of the legacy articles service. To complicate things, the newspaper's blog, previously served by a separate **blog** service, was just incorporated into the articles service. Now, all blog posts are articles, served with the `/beta/blog` path.
+たとえば、新聞社のWebサイトの**frontend**エンジニアリングチームにいるとします。ユーザー向けのfrontendサービスは、**articles**というバックエンドに依存しており、articlesのコンテンツとメタデータをJSONとして提供します。しかし、articlesチームはサービスを新しい言語でリファクタリングしており、新しい変更を頻繁に展開しています。これにより、frontendで予期しないエラーが発生し、レガシーarticlesサービスの動作に依存していました。さらに複雑なことに、以前は別の**blog**サービスで提供されていた新聞のブログが、articlesサービスに組み込まれただけでした。現在、すべてのブログ投稿は  `/beta/blog` パスで提供される記事です。
 
-In order to lock in the behavior of articles on behalf of the frontend, we'll create an Istio traffic policy for articles. The frontend's traffic requirements for articles include: returning a `no-cache` header for any `/breaking-news` article, rewriting `/blog` to `/beta/blog`, and enforcing a 2-second timeout on every request.
+frontendに代わって articlesの動作を固定するために、articlesのIstioトラフィックポリシーを作成します。articlesに対するfrontendのトラフィック要件には、`/breaking-news` articlesの `no-cache` ヘッダーを返す、`/blog` を `/beta/blog` に書き換える、すべてのリクエストで2秒のタイムアウトを適用するなどがあります。
 
 ![](/images/multiple-functionality.png)
 
-To get this aggregate functionality, we'll create one VirtualService for articles, with three `http` rules: [header modification](/response-headers) for `/breaking-news`, URL rewrite for `/blog`, and a default fallthrough to the articles service. All three rules have a 2-second timeout.
+この集約機能を取得するために、`/breaking-news` の[レスポンスヘッダの変更](/response-headers)、`/blog` のURL書き換え、およびarticlesサービスへのデフォルトのフォールスルーの3つの `http` ルールを使用して、articlesに対して1つのVirtualServiceを作成します。 3つのルールすべてに2秒のタイムアウトがあります。
 
 ![](/images/multiple-vs.png)
 
@@ -53,7 +53,7 @@ spec:
     weight: 100
 ```
 
-After applying this VirtualService to the cluster, we can exec into the frontend pod and access the articles service, to verify that the rules are taking effect. For instance, if we request a `/breaking-news` article, we'll see the `no-cache:true` header added to the response:
+このVirtualServiceをクラスターに適用した後、frontend Podで実行してarticlesサービスにアクセスし、ルールが有効になっていることを確認できます。たとえば、`/breaking-news` 記事をリクエストすると、応答に `no-cache:true` ヘッダーが追加されます。:
 
 ```bash
 $ curl -v http://articles:80/article/breaking-news/2020/astrophysics-discovery
@@ -64,7 +64,7 @@ $ curl -v http://articles:80/article/breaking-news/2020/astrophysics-discovery
 < no-cache: true
 ```
 
-If we request a path starting with `/blog`, that gets rewritten to `/beta/blog`, and articles knows to serve the `/beta/blog` path:
+`/blog` で始まるパスをリクエストすると、`/beta/blog` に書き直され、articlesは `/beta/blog` パスを提供することが分かります。
 
 ```bash
 $ curl http://articles:80/blog/2020/new-engineering-blog
@@ -72,7 +72,7 @@ $ curl http://articles:80/blog/2020/new-engineering-blog
 {"id":91385,"title":"Welcome to the new News Blog!" ...
 ```
 
-And finally, if we write in a 10-second sleep into the article service's application code, we can see our 2-second timeout in action:
+最後に、articlesサービスのアプリケーションコードに10秒のスリープを書き込むと、2秒のタイムアウトの動作を確認できます。:
 
 ```bash
 $ curl  http://articles:80/
@@ -82,7 +82,7 @@ upstream request timeout
 
 ![](/images/multiple-fault.png)
 
-**Note**: When you add multiple rules to one VirtualService, [the rules are evaluated **in order**](https://istio.io/docs/concepts/traffic-management/#routing-rule-precedence), from top to bottom. So if we add a [fault injection](https://istio.io/docs/tasks/traffic-management/fault-injection/#injecting-an-http-abort-fault) rule to the articles VirtualService to return HTTP status code `404: Not Found` on all requests, that rule will override the other three, taking down the entire articles service:
+**注**：1つのVirtualServiceに複数のルールを追加すると、**順番に**[ルールは評価](https://istio.io/docs/concepts/traffic-management/#routing-rule-precedence)されます。したがって、Articles VirtualServiceに[fault injection](https://istio.io/docs/tasks/traffic-management/fault-injection/#injecting-an-http-abort-fault)ルールを追加して、HTTPステータスコード `404: Not Found` を返す場合、そのルールは他の3つをオーバーライドし、Articlesサービス全体を停止します。:
 
 ```bash
 curl -v http://articles:80
@@ -92,4 +92,4 @@ curl -v http://articles:80
 < HTTP/1.1 404 Not Found
 ```
 
-Because of this rule precedence for VirtualServices, it's important to validate and test complex Istio traffic policies. It's also a good idea to add a "fallthrough" or default rule, as we did above, to ensure that all requests for a specific host get routed.
+VirtualServicesにはこのルールの優先順位があるため、複雑なIstioトラフィックポリシーを検証およびテストすることが重要です。上記で行ったように、「フォールスルー」またはデフォルトのルールを追加して、特定のホストに対するすべてのリクエストが確実にルーティングされるようにすることもお勧めします。
