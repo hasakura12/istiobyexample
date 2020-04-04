@@ -89,7 +89,7 @@ thumb = "/images/t-authz.png"
 url = "/authorization"
 
 [[security]]
-title = "セキュアイングレス"
+title = "セキュアなイングレス"
 thumb = "/images/t-secure-ingress.png"
 url = "/secure-ingress"
 
