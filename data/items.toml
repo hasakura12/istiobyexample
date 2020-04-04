@@ -69,12 +69,12 @@ thumb = "/images/t-multiple.png"
 url = "/multiple-traffic-rules"
 
 [[traffic]]
-title = "Virtual Machines"
+title = "仮想マシン"
 thumb = "/images/t-vms.png"
 url = "/virtual-machines"
 
 [[security]]
-title = "Mutual TLS"
+title = "相互TLS"
 thumb = "/images/t-mtls.png"
 url = "/mtls"
 
