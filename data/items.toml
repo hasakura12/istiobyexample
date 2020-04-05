@@ -39,7 +39,7 @@ thumb = "/images/t-headers.png"
 url = "/response-headers"
 
 [[traffic]]
-title = "Retry Logic"
+title = "リトライロジック"
 thumb = "/images/t-retry.png"
 url = "/retry"
 
