@@ -49,7 +49,7 @@ thumb = "/images/t-fault-injection.png"
 url = "/fault-injection"
 
 [[traffic]]
-title = "Database Traffic"
+title = "データベーストラフィック"
 thumb = "/images/t-databases.png"
 url = "/databases"
 
