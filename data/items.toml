@@ -24,7 +24,7 @@ thumb = "/images/t-lb.png"
 url = "/load-balancing"
 
 [[traffic]]
-title = "Locality Load Balancing"
+title = "ローカリティロードバランシング"
 thumb = "/images/t-locality.png"
 url = "/locality-load-balancing"
 
