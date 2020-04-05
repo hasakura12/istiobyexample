@@ -54,7 +54,7 @@ thumb = "/images/t-databases.png"
 url = "/databases"
 
 [[traffic]]
-title = "Traffic Mirroring"
+title = "トラフィックミラーリング"
 thumb = "/images/t-mirroring.png"
 url = "/traffic-mirroring"
 
