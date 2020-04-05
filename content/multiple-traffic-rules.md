@@ -4,11 +4,11 @@ publishDate: "2019-12-31"
 categories: ["Traffic Management"]
 ---
 
-Istioは、[リダイレクト](https://istio.io/docs/reference/config/networking/virtual-service/#HTTPRewrite)や[トラフィック分割](https://istio.io/docs/tasks/traffic-management/traffic-shifting/)から[ミラーリング](https://istio.io/docs/tasks/traffic-management/mirroring/)や[再試行ロジック](https://istio.io/docs/concepts/traffic-management/#retries)まで、さまざまな[トラフィック管理](https://istio.io/docs/concepts/traffic-management/)の使用例をサポートしています。 Istio [仮想サービス](https://istio.io/docs/reference/config/networking/virtual-service/)を作成して、サービスのためにこれらのポリシーの1つを定義した場合、同じリソースにさらにトラフィック管理ルールを追加するのは簡単です。この例は、1つのKubernetesベースのサービスに複数のトラフィックルールを適用する方法を示しています。
+Istioは、[リダイレクト](https://istio.io/docs/reference/config/networking/virtual-service/#HTTPRewrite)や[トラフィック分割](https://istio.io/docs/tasks/traffic-management/traffic-shifting/)から[ミラーリング](https://istio.io/docs/tasks/traffic-management/mirroring/)や[リトライロジック](https://istio.io/docs/concepts/traffic-management/#retries)まで、さまざまな[トラフィック管理](https://istio.io/docs/concepts/traffic-management/)の使用例をサポートしています。 Istio [VirtualService](https://istio.io/docs/reference/config/networking/virtual-service/)（Istioのリソース名です）を作成して、サービスのためにこれらのポリシーの1つを定義した場合、同じリソースにさらにトラフィック管理ルールを追加するのは簡単です。この例は、1つのKubernetesベースのサービスに複数のトラフィックルールを適用する方法を示しています。
 
-たとえば、新聞社のWebサイトの**frontend**エンジニアリングチームにいるとします。ユーザー向けのfrontendサービスは、**articles**というバックエンドに依存しており、articlesのコンテンツとメタデータをJSONとして提供します。しかし、articlesチームはサービスを新しい言語でリファクタリングしており、新しい変更を頻繁に展開しています。これにより、frontendで予期しないエラーが発生し、レガシーarticlesサービスの動作に依存していました。さらに複雑なことに、以前は別の**blog**サービスで提供されていた新聞のブログが、articlesサービスに組み込まれただけでした。現在、すべてのブログ投稿は  `/beta/blog` パスで提供される記事です。
+たとえば、新聞社のWebサイトの**frontend**エンジニアリングチームにいるとします。ユーザー向けのfrontendサービスは、**articles**というバックエンドに依存しており、articlesのコンテンツとメタデータをJSONとして提供します。しかし、articlesチームはサービスを新しい言語でリファクタリングしており、新しい変更を頻繁に展開しています。これにより，古いarticleサービスの挙動に依存しているfrontendでは予期せぬエラーが発生するようになりました。さらに複雑なことに、以前は別の**blog**サービスで提供されていた新聞のブログが、articlesサービスに組み込まれてしまいました。現在、すべてのブログ投稿は  `/beta/blog` パスで提供される記事です。
 
-frontendに代わって articlesの動作を固定するために、articlesのIstioトラフィックポリシーを作成します。articlesに対するfrontendのトラフィック要件には、`/breaking-news` articlesの `no-cache` ヘッダーを返す、`/blog` を `/beta/blog` に書き換える、すべてのリクエストで2秒のタイムアウトを適用するなどがあります。
+frontendに代わって articlesの動作を固定するために、articlesのIstioトラフィックポリシーを作成します。articlesに対するfrontendのトラフィック要件には、`/breaking-news` 記事に `no-cache` ヘッダーを付与する、`/blog` を `/beta/blog` に書き換える、すべてのリクエストで2秒のタイムアウトを適用するなどがあります。
 
 ![](/images/multiple-functionality.png)
 
@@ -53,7 +53,7 @@ spec:
     weight: 100
 ```
 
-このVirtualServiceをクラスターに適用した後、frontend Podで実行してarticlesサービスにアクセスし、ルールが有効になっていることを確認できます。たとえば、`/breaking-news` 記事をリクエストすると、応答に `no-cache:true` ヘッダーが追加されます。:
+このVirtualServiceをクラスターに適用した後、 kubectl exec で frontend Pod に入り，articles サービスにアクセスすると、ルールが有効になっていることを確認できます。たとえば、`/breaking-news` 記事をリクエストすると、応答に `no-cache:true` ヘッダーが追加されます。:
 
 ```bash
 $ curl -v http://articles:80/article/breaking-news/2020/astrophysics-discovery
@@ -72,7 +72,7 @@ $ curl http://articles:80/blog/2020/new-engineering-blog
 {"id":91385,"title":"Welcome to the new News Blog!" ...
 ```
 
-最後に、articlesサービスのアプリケーションコードに10秒のスリープを書き込むと、2秒のタイムアウトの動作を確認できます。:
+最後に、articlesサービスのアプリケーションコードに10秒のスリープ処理を追加すると、2秒のタイムアウトの動作を確認できます。:
 
 ```bash
 $ curl  http://articles:80/
@@ -82,7 +82,7 @@ upstream request timeout
 
 ![](/images/multiple-fault.png)
 
-**注**：1つのVirtualServiceに複数のルールを追加すると、**順番に**[ルールは評価](https://istio.io/docs/concepts/traffic-management/#routing-rule-precedence)されます。したがって、Articles VirtualServiceに[fault injection](https://istio.io/docs/tasks/traffic-management/fault-injection/#injecting-an-http-abort-fault)ルールを追加して、HTTPステータスコード `404: Not Found` を返す場合、そのルールは他の3つをオーバーライドし、Articlesサービス全体を停止します。:
+**注**：1つのVirtualServiceに複数のルールを追加すると、上から下まで**順番に**[ルールは評価](https://istio.io/docs/concepts/traffic-management/#routing-rule-precedence)されます。したがって、articlesのVirtualServiceへ，全てのリクエストにHTTPステータスコード `404: Not Found` を返すような[fault injection](https://istio.io/docs/tasks/traffic-management/fault-injection/#injecting-an-http-abort-fault…)ルールを追加した場合、そのルールは他の3つをオーバーライドし、Articlesサービス全体を停止します。:
 
 ```bash
 curl -v http://articles:80
