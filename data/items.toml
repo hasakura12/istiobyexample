@@ -44,7 +44,7 @@ thumb = "/images/t-retry.png"
 url = "/retry"
 
 [[traffic]]
-title = "Fault Injection"
+title = "フォールトインジェクション"
 thumb = "/images/t-fault-injection.png"
 url = "/fault-injection"
 
