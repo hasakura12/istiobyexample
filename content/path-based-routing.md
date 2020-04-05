@@ -1,14 +1,14 @@
 ---
-title: Path-Based Routing
+title: Pathに基づいたルーティング
 publishDate: "2019-12-31"
 categories: ["Traffic Management"]
 ---
 
-Istio and [Envoy](https://istio.io/docs/concepts/what-is-istio/#envoy) work at the Application traffic layer (L7), allowing you to direct and load-balance traffic based on attributes like HTTP headers. This example shows how to direct traffic [based on the request URI](https://istio.io/docs/concepts/traffic-management/#match-request-uri) path.
+Istioと[Envoy](https://istio.io/docs/concepts/what-is-istio/#envoy)はアプリケーショントラフィックレイヤー（L7）で動作し、HTTPヘッダーなどの属性に基づいてトラフィックの転送および負荷分散できます。この例は、[リクエストURIパスに基づいた](https://istio.io/docs/concepts/traffic-management/#match-request-uri)トラフィックを転送する方法となります。
 
-In this example, `myapp` is the server backend for a website, used by the `frontend`. An engineering team has implemented a new user authentication service, `auth`, which now operates as a separate service.
+この例において、`myapp` はWebサイトのサーバーバックエンドであり、`frontend` によって使用されます。エンジニアリングチームは、新しいユーザー認証サービス `auth` を実装しました。authは現在、別のサービスとして動作しています。
 
-Using an Istio [match rule](https://istio.io/docs/reference/config/networking/v1alpha3/virtual-service/#HTTPMatchRequest), we redirect any request with the `/login` prefix to the new `auth` service, and direct all other `myapp` requests to the existing backend.
+Istio [match rule](https://istio.io/docs/reference/config/networking/virtual-service/#HTTPMatchRequest) を使用して、`/login` プレフィックスを含むすべてのリクエストを新しい `auth` サービスにリダイレクトし、他のすべての `myapp` リクエストを既存のバックエンドに転送します。
 
 ![URI Match with Istio](/images/path-based-urimatch.png)
 
