@@ -121,7 +121,7 @@ RESOURCE NAME:inventory-credential, EVENT: pushed key/cert pair to proxy
 
 これで、クラスターの外部から2つのサービスにリクエストを送信する準備ができました。相互TLSを構成したので、サーバー（Ingress Gateway）がクライアントのIDを検証するために、`CA証明書` に加えて `証明書` と `鍵`を指定する必要があることに注意してください。
 
-まず、クラスター外のホストから、frontendクライアント鍵を使用してfrontendをcurlでリクエストを送信します。：
+まず、クラスター外のホストから、frontendクライアント鍵を使用してfrontendにcurlでリクエストを送信します。：
 
 ```
 $ curl -HHost:frontend.foocorp.com \
