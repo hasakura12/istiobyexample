@@ -34,7 +34,7 @@ spec:
           - "set-cookie"
 ```
 
-Before we apply the VirtualService, the `frontend` service returns the following response headers:
+VirtualServiceを適用する前に、`frontend` サービスは次の応答ヘッダーを返します。:
 
 ```
 HTTP/1.1 200 OK
@@ -46,7 +46,7 @@ server: istio-envoy
 transfer-encoding: chunked
 ```
 
-Then when we `kubectl apply` the VirtualService, we see that Envoy is successfully configured to modify the response headers:
+次に、`kubectl apply` コマンドでVirtualServiceを実行すると、レスポンスヘッダーを変更するようにEnvoyが正常に構成されていることがわかります。:
 
 ```
 HTTP/1.1 200 OK
