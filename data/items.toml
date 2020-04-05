@@ -59,7 +59,7 @@ thumb = "/images/t-mirroring.png"
 url = "/traffic-mirroring"
 
 [[traffic]]
-title = "Monitoring Egress Traffic"
+title = "Egressトラフィック監視"
 thumb = "/images/t-ptbh.png"
 url = "/monitoring-egress-traffic"
 
