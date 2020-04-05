@@ -1,5 +1,5 @@
 ---
-title: JWT
+title: "JWT"
 publishDate: "2019-12-31"
 categories: ["Security"]
 ---
