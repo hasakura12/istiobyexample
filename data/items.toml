@@ -34,7 +34,7 @@ thumb = "/images/t-path.png"
 url = "/path-based-routing"
 
 [[traffic]]
-title = "Modify Response Headers"
+title = "レスポンスヘッダーの変更"
 thumb = "/images/t-headers.png"
 url = "/response-headers"
 
