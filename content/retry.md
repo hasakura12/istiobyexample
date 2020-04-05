@@ -1,16 +1,16 @@
 ---
-title: Retry Logic
+title: リトライロジック
 publishDate: "2019-12-31"
 categories: ["Traffic Management"]
 ---
 
-Microservices architectures are distributed. This means more requests on the network, increasing the chance of transient failures like network congestion.
+マイクロサービスアーキテクチャは分散されています。これは、ネットワーク上のリクエストが増えることを意味し、ネットワークの輻輳などの一時的な障害の可能性が高まります。
 
-Adding retry policies for requests helps build resiliency in a services architecture. Often, this retry logic is [built into source code](https://upgear.io/blog/simple-golang-retry-function/). But with Istio, you can define retry policies [with a traffic rule](https://istio.io/docs/concepts/traffic-management/#set-number-and-timeouts-for-retries), offloading this logic to your services' [sidecar proxies](https://istio.io/docs/concepts/what-is-istio/#architecture). This can help you standardize around the same policies across many services, protocols, and programming languages.
+リクエストにリトライポリシーを追加すると、サービスアーキテクチャの復元力を構築するのに役立ちます。多くの場合、このリトライロジックは[ソースコードに組み込まれて](https://upgear.io/blog/simple-golang-retry-function/)います。ただし、Istioでは、[トラフィックルール](https://istio.io/docs/concepts/traffic-management/#set-number-and-timeouts-for-retries)を使用してリトライポリシーを定義して、このロジックをサービスの[サイドカープロキシ](https://istio.io/docs/concepts/what-is-istio/#architecture)に任せることができます。これは、多くのサービス、プロトコル、およびプログラミング言語にわたって同じポリシーを中心に標準化するのに役立ちます。
 
 ![Diagram](/images/retry.png)
 
-In this example, all inbound requests to the `helloworld` service try 5 times, and an attempt is marked as failed if it takes longer than 2 seconds to complete.
+この例では、`helloworld` サービスへのすべての内向きのリクエストが5回試行され、完了までに2秒以上かかる場合、試行は失敗としてマークされます。
 
 ```YAML
 apiVersion: networking.istio.io/v1alpha3
