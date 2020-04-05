@@ -1,5 +1,5 @@
 ---
-title: Virtual Machines
+title: 仮想マシン
 publishDate: "2019-12-31"
 categories: ["Traffic Management"]
 ---
@@ -10,17 +10,17 @@ Kubernetesでコンテナ化されたサービスを実行すると、自動ス�
 
 ![](/images/vm-call-flow.png)
 
-この例では、ローカルライブラリのWebアプリケーションを実行しています。このウェブアプリには複数のバックエンドがあり、すべてKubernetesクラスターで実行されています。 Kubernetesのワークロードの1つ、`inventory` は、PostgreSQLデータベースと通信し、ライブラリに追加された新しい本ごとにレコードを書き込みます。このデータベースは、別のクラウドリージョンの仮想マシンで実行されています。
+この例では、地方図書館のWebアプリケーションを実行しています。このウェブアプリには複数のバックエンドがあり、すべてKubernetesクラスターで実行されています。 Kubernetesのワークロードの1つ、`inventory` は、PostgreSQLデータベースと通信し、図書館に追加された新しい本ごとにレコードを書き込みます。このデータベースは、別のクラウドリージョンの仮想マシンで実行されています。
 
 VMベースのデータベースであるPostgreSQLの完全なIstioの機能を取得するには、VMにIstioサイドカープロキシをインストールし、クラスターで実行されているIstioコントロールプレーンと通信するように構成する必要があります。（これは外部の[ServiceEntries](/external-services)を追加するのとは異なる点に注意してください。）Postgresデータベースを3つのステップでメッシュに追加できます。[GitHubのデモコマンド](https://github.com/askmeegs/postgres-library/tree/0241acce9d7e2cede0de8ac9baa1338624f716eb#-postgres-library)に従ってください。
 
 ![](/images/vm-architecture.png)
 
-1. **PodからVMへのトラフィック用の**[ファイアウォールルールを作成](https://github.com/askmeegs/postgres-library#5-allow-pod-ip-traffic-to-the-vm)します。これにより、Kubernetes PodのCIDR範囲からVMベースのワークロードに直接トラフィックを送信できます。
-2. **VM上に**[Istioをインストール](https://github.com/askmeegs/postgres-library#6-prepare-a-clusterenv-file-to-send-to-the-vm)します。サービスアカウントキー、およびVMサービスが公開するポート（この場合は、PostgreSQLクライアントポート `5432`）をコピーします。 VMの `/etc/hosts` を更新して、クラスターで実行されているIstio IngressGatewayを介して `istio.pilot` および `istio.citadel` トラフィックをルーティングします。次に、VMにIstioサイドカープロキシとノードエージェントをインストールします。ノードエージェントは、相互TLS認証のために、サイドカープロキシにマウントするクライアント証明書を生成します。`systemctl` を使用してプロキシとノードエージェントを起動します。
-3. **Kubernetesのワークロード**[VMに登録](https://github.com/askmeegs/postgres-library#8-register-the-vm-with-istio-running-on-the-gke-cluster)します。Postgresデータベースをメッシュに追加するには、2つのKubernetesリソースが必要です。 1つは `ServiceEntry`です。これにより、KubernetesのDNS名が仮想マシンのIPアドレスにルーティングされます。最後に、そのDNSエントリを作成するには、Kubernetesの `Service` が必要です。これにより、クライアントPodが `postgres-1-vm.default.svc.cluster.local` で[データベース接続を開始](https://github.com/askmeegs/postgres-library/blob/master/main.go#L39)できるようになります。これを行うには、`istioctl register` コマンドを使用できます。
+1. **PodからVMへのトラフィック用の[ファイアウォールルールを作成](https://github.com/askmeegs/postgres-library#5-allow-pod-ip-traffic-to-the-vm)します。** これにより、Kubernetes PodのCIDR範囲からVMベースのワークロードに直接トラフィックを送信できます。
+2. **VM上に[Istioをインストール](https://github.com/askmeegs/postgres-library#6-prepare-a-clusterenv-file-to-send-to-the-vm)します。** サービスアカウントキー、およびVMサービスが公開するポート（この場合は、PostgreSQLクライアントポート `5432`）をコピーします。 VMの `/etc/hosts` を更新して、クラスターで実行されているIstio IngressGatewayを介して `istio.pilot` および `istio.citadel` トラフィックをルーティングします。次に、VMにIstioサイドカープロキシとノードエージェントをインストールします。ノードエージェントは、相互TLS認証のために、サイドカープロキシにマウントするクライアント証明書を生成します。`systemctl` を使用してプロキシとノードエージェントを起動します。
+3. **KubernetesのワークロードVMに登録](https://github.com/askmeegs/postgres-library#8-register-the-vm-with-istio-running-on-the-gke-cluster)します。**[Postgresデータベースをメッシュに追加するには、2つのKubernetesリソースが必要です。 1つは `ServiceEntry`です。これにより、KubernetesのDNS名で仮想マシンのIPアドレスにルーティング可能になります。最後に、そのDNSエントリを作成するには、Kubernetesの `Service` が必要です。これにより、クライアントPodが `postgres-1-vm.default.svc.cluster.local` で[データベース接続を開始](https://github.com/askmeegs/postgres-library/blob/master/main.go#L39)できるようになります。これを行うには、`istioctl register` コマンドを使用できます。
 
-これで、Podのログを表示して、Kubernetesベースのクライアントがデータベースに正常に書き込めることを確認できます。:
+Podのログを見ることで、Kubernetesベースのクライアントがデータベースに正常に書き込めることを確認できます。:
 
 ```
 postgres-library-6bb956f86b-dt94x server ✅ inserted Fun Home
@@ -28,7 +28,7 @@ postgres-library-6bb956f86b-dt94x server ✅ inserted Infinite Jest
 postgres-library-6bb956f86b-dt94x server ✅ inserted To the Lighthouse
 ```
 
-また、VM上にあるEnvoyのアクセスログを見ることで、VM上で実行されているサイドカープロキシがポート `5432` で内向けのトラフィックを傍受していることを確認できます。
+また、VM上にあるEnvoyのアクセスログを見ることで、VM上で実行されているサイドカープロキシがポート `5432` で内向きのトラフィックを傍受していることを確認できます。
 
 ```
 $ tail /var/log/istio/istio.log
