@@ -1,5 +1,5 @@
 ---
-title: 仮想マシン
+title: "仮想マシン"
 publishDate: "2019-12-31"
 categories: ["Traffic Management"]
 ---
