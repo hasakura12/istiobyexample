@@ -4,7 +4,7 @@ publishDate: "2019-12-31"
 categories: ["Traffic Management"]
 ---
 
-Istioは、[リダイレクト](https://istio.io/docs/reference/config/networking/virtual-service/#HTTPRewrite)や[トラフィック分割](https://istio.io/docs/tasks/traffic-management/traffic-shifting/)から[ミラーリング](https://istio.io/docs/tasks/traffic-management/mirroring/)や[リトライロジック](https://istio.io/docs/concepts/traffic-management/#retries)まで、さまざまな[トラフィック管理](https://istio.io/docs/concepts/traffic-management/)の使用例をサポートしています。 Istio [VirtualService](https://istio.io/docs/reference/config/networking/virtual-service/)（Istioのリソース名です）を作成して、サービスのためにこれらのポリシーの1つを定義した場合、同じリソースにさらにトラフィック管理ルールを追加するのは簡単です。この例は、1つのKubernetesベースのサービスに複数のトラフィックルールを適用する方法を示しています。
+Istioは、[リダイレクト](https://istio.io/docs/reference/config/networking/virtual-service/#HTTPRewrite)や[トラフィック分割](https://istio.io/docs/tasks/traffic-management/traffic-shifting/)から[ミラーリング](https://istio.io/docs/tasks/traffic-management/mirroring/)や[リトライロジック](https://istio.io/docs/concepts/traffic-management/#retries)まで、さまざまな[トラフィック管理](https://istio.io/docs/concepts/traffic-management/)の使用例をサポートしています。 Istio [VirtualService](https://istio.io/docs/reference/config/networking/virtual-service/)を作成して、サービスのためにこれらのポリシーの1つを定義した場合、同じリソースにさらにトラフィック管理ルールを追加するのは簡単です。この例は、1つのKubernetesベースのサービスに複数のトラフィックルールを適用する方法を示しています。
 
 たとえば、新聞社のWebサイトの**frontend**エンジニアリングチームにいるとします。ユーザー向けのfrontendサービスは、**articles**というバックエンドに依存しており、articlesのコンテンツとメタデータをJSONとして提供します。しかし、articlesチームはサービスを新しい言語でリファクタリングしており、新しい変更を頻繁に展開しています。これにより，古いarticleサービスの挙動に依存しているfrontendでは予期せぬエラーが発生するようになりました。さらに複雑なことに、以前は別の**blog**サービスで提供されていた新聞のブログが、articlesサービスに組み込まれてしまいました。現在、すべてのブログ投稿は  `/beta/blog` パスで提供される記事です。
 
