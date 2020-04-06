@@ -4,7 +4,7 @@ publishDate: "2019-12-31"
 categories: ["Traffic Management"]
 ---
 
-Istioと[Envoy](https://istio.io/docs/concepts/what-is-istio/#envoy)はアプリケーショントラフィックレイヤー（L7）で動作し、HTTPヘッダーなどの属性に基づいてトラフィックの転送および負荷分散できます。この例は、[リクエストURIパスに基づいた](https://istio.io/docs/concepts/traffic-management/#match-request-uri)トラフィックを転送する方法となります。
+Istioと[Envoy](https://istio.io/docs/concepts/what-is-istio/#envoy)はアプリケーショントラフィックレイヤー（L7）で動作し、HTTPヘッダーなどの属性に基づいてトラフィックを転送および負荷分散できます。この例は、[リクエストURIパスに基づいて](https://istio.io/docs/concepts/traffic-management/#match-request-uri)トラフィックを転送する方法となります。
 
 この例において、`myapp` はWebサイトのサーバーバックエンドであり、`frontend` によって使用されます。エンジニアリングチームは、新しいユーザー認証サービス `auth` を実装しました。authは現在、別のサービスとして動作しています。
 
