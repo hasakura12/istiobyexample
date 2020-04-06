@@ -4,11 +4,11 @@ publishDate: "2019-12-31"
 categories: ["Traffic Management"]
 ---
 
-サービスメッシュについて考える1つの方法は、ドメイン制御です。 Istio[サイドカーインジェクション](https://istio.io/docs/ops/deployment/architecture/#components)が有効になっているKubernetesのネームスペースで、Pod間のすべてのトラフィックを[監視](https://istio.io/docs/tasks/observability/)し、セキュリティポリシーを[適用](https://istio.io/docs/tasks/security/authorization/authz-http/)できます。
+サービスメッシュについて考える1つの方法は、ドメイン制御です。 Istio[サイドカーインジェクション](https://istio.io/docs/ops/deployment/architecture/#components)が有効になっているKubernetesのNamespaceで、Pod間のすべてのトラフィックを[監視](https://istio.io/docs/tasks/observability/)し、セキュリティポリシーを[適用](https://istio.io/docs/tasks/security/authorization/authz-http/)できます。
 
-しかし、メッシュの外側にあるアップストリームサービスはどうでしょうか。どのサービスが外部APIを呼び出すかを実行時にどうやって決定するのでしょうか？サービスが書き込んでいるデータベースインスタンスをどのようにして知るのでしょうか？または、メッシュ内のサービスが独自の地理的領域内のトラフィックのみを送信していることをどのように確認するのでしょうか？こうしたことは、[Istio egress monitoring](https://istio.io/blog/2019/monitoring-external-service-traffic/) が解決します。
+しかし、メッシュの外側にあるアップストリームサービスはどうでしょうか。どのサービスが外部APIを呼び出すかを実行時にどうやって決定するのでしょうか？サービスが書き込んでいるデータベースインスタンスをどのようにして知るのでしょうか？または、メッシュ内のサービスが独自の地理的領域内のトラフィックのみを送信していることをどのように確認するのでしょうか？こうしたことは、[IstioのEgress監視](https://istio.io/blog/2019/monitoring-external-service-traffic/) が解決します。
 
-*Egress*は*出口*を意味します。この場合、Egressトラフィックとは、Istioメッシュから出る必要があるリクエストを意味します。 デフォルトですべてのEgressトラフィックを[Istioがブロックした](https://archive.istio.io/v1.0/docs/tasks/traffic-management/egress/)時期がありました。サービスがアクセスする必要があるすべての外部ホストをホワイトリストに登録するには、[`ServiceEntry`](https://istio.io/docs/tasks/traffic-management/egress/egress-control/#access-an-external-http-service)を手動で作成する必要がありました。ServiceEntryは、Istioのサービスレジストリに外部ホストを追加します。これはIstio 1.3で変更され、`REGISTRY_ONLY` Egressポリシーがデフォルトで [`ALLOW_ANY`](https://istio.io/docs/tasks/traffic-management/egress/egress-control/#envoy-passthrough-to-external-services) になりました。これで、メッシュ内サービスは `ServiceEntry` を必要とせずに、外部サービスに自由にアクセスできます。
+*Egress*は*出口*を意味します。この場合、Egressトラフィックとは、Istioメッシュから出る必要があるリクエストを意味します。 デフォルトですべてのEgressトラフィックを[Istioがブロックした](https://archive.istio.io/v1.0/docs/tasks/traffic-management/egress/)時期がありました。サービスがアクセスする必要があるすべての外部ホストをホワイトリストに登録するには、[`ServiceEntry`](https://istio.io/docs/tasks/traffic-management/egress/egress-control/#access-an-external-http-service)を手動で作成する必要がありました。ServiceEntryは、Istioのサービスレジストリに外部ホストを追加します。これはIstio 1.3で変更され、`REGISTRY_ONLY` Egressポリシーがデフォルトで [`ALLOW_ANY`](https://istio.io/docs/tasks/traffic-management/egress/egress-control/#envoy-passthrough-to-external-services) になりました。このため、現在メッシュ内サービスは `ServiceEntry` を必要とせずに、外部サービスに自由にアクセスできます。
 
 メッシュにどのIstioEgressオプションを選択しても、IstioはすべてのEgressトラフィックを監視できます。また、[専用のEgressゲートウェイ](https://istio.io/docs/tasks/traffic-management/egress/egress-gateway/#use-case)プロキシを必要とせずに、ワークロードのサイドカープロキシを通してこのEgressトラフィックを監視できます。それがどのように機能するか見てみましょう。
 
@@ -22,9 +22,9 @@ categories: ["Traffic Management"]
 
 Envoy[クラスター](https://jvns.ca/blog/2018/10/27/envoy-basics/)は、エンドポイントのバックエンド（または「アップストリーム」）セットであり、外部サービスを表します。 IstioサイドカーEnvoyプロキシは、アプリケーションコンテナーからのインターセプトされたリクエストにフィルターを適用します。これらのフィルターに基づいて、Envoyは特定のルートにトラフィックを送信します。ルートは、トラフィックを送信するクラスターを指定します。
 
-Istio `Passthrough` は、バックエンドが[元のリクエストの宛先](https://www.envoyproxy.io/docs/envoy/latest/intro/arch_overview/upstream/service_discovery#original-destination)になるように設定されています。したがって、Egressトラフィックで `ALLOW_ANY` が有効になっている場合、Envoyは単に `idgen` のリクエストを `httpbin` に「パススルー」します。
+Istio `Passthrough` クラスターは、バックエンドが[元のリクエストの宛先](https://www.envoyproxy.io/docs/envoy/latest/intro/arch_overview/upstream/service_discovery#original-destination)になるように設定されています。したがって、Egressトラフィックで `ALLOW_ANY` が有効になっている場合、Envoyは単に `idgen` のリクエストを `httpbin` に「パススルー」します。
 
-この構成では、IngressGatewayを介してレシピIDリクエストを送信すると、`idgen` は `httpbin` を正常に呼び出すことができます。このトラフィックは、Kialiサービスグラフで `PassthroughCluster` トラフィックとして表示されます。`httpbin` が独自のサービスレベルのテレメトリを取得するために、`ServiceEntry` を追加する必要があります。（これはすぐに行います。）
+この構成では、IngressGatewayを介してレシピIDリクエストを送信すると、`idgen` は `httpbin` を正常に呼び出すことができます。このトラフィックは、Kialiサービスグラフで `PassthroughCluster` トラフィックとして表示されます。`httpbin` が独自のサービスレベルのテレメトリを取得するには、`ServiceEntry` を追加する必要があります。（後ほど行います。）
 
 ![](/images/ptbh-kiali-passthrough.png)
 
@@ -42,7 +42,7 @@ Istio `Passthrough` は、バックエンドが[元のリクエストの宛先](
 
 ![](/images/ptbh-kiali-blackhole.png)
 
-Prometheusでは、`istio_total_requests` メトリクスが `BlackHoleCluster` トラフィックを考慮していることがわかります。実際には、このメトリクスにアラートを設定して、クラスター内のサービスによって試みられた[data exfiltration](https://en.wikipedia.org/wiki/Data_exfiltration)を検出できます。このモードでは、Prometheusはブロックされたリクエストのソースと（試行された）宛先の両方のワークロードを通知できます。
+Prometheusでは、`istio_total_requests` メトリクスが `BlackHoleCluster` トラフィックを考慮していることがわかります。実際には、このメトリクスにアラートを設定して、クラスター内のサービスによって試みられた[data exfiltration](https://en.wikipedia.org/wiki/Data_exfiltration)を検出できます。このモードでは、Prometheusはブロックされたリクエストの送信元と（試行された）宛先の両方のワークロードを通知できます。
 
 ![](/images/ptbh-prom-blackhole.png)
 
@@ -66,13 +66,13 @@ spec:
   location: MESH_EXTERNAL
 ```
 
-これで、リクエストがメッシュを正常に終了し、`BlackHoleCluster` によってドロップされていないことがわかります。:
+これで、リクエストがメッシュを正常に脱出し、`BlackHoleCluster` によってドロップされていないことがわかります。:
 
 ![](/images/ptbh-kiali-serviceentry.png)
 
 また、ServiceEntryを使用すると、Istioは、Kubernetesクラスターの外にあり、制御ドメインの一部ではありませんが、httpbinを別のメッシュサービスとして扱います。これで、`httpbin` 専用のテレメトリを取得できるようになりました。別の外部サービスを追加すると、サービスグラフに独自の別個のノードとして表示されます。
 
-Egressトラフィック監視の詳細について学ぶ：
+Egressトラフィック監視について詳しく学ぶ：
 - [Istioブログ：Neeraj Poddarによる、ブロックされたパススルー外部サービストラフィックの監視](https://istio.io/blog/2019/monitoring-external-service-traffic/)
 - [Istio Docs：デフォルトの指標](https://istio.io/docs/reference/config/policy-and-telemetry/metrics/)
 - [Envoy Basics、by Julia Evans](https://jvns.ca/blog/2018/10/27/envoy-basics/)
