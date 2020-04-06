@@ -8,7 +8,7 @@ Istioでは、[HTTPリクエストヘッダー](https://istio.io/docs/tasks/traf
 
 ![](/images/modify-response-headers.png)
 
-この例では、Istioの[VirtualService](https://istio.io/docs/concepts/traffic-management/#virtual-services)を適用して新しいヘッダー（`hello:world`）を追加して、`set-cookie` ヘッダーを削除します。次に、`デフォルト` ゲートウェイを介してサービスメッシュに入るすべてのクライアントリクエストは、変更されたヘッダーを受信します。
+この例では、Istioの[VirtualService](https://istio.io/docs/concepts/traffic-management/#virtual-services)を適用して新しいヘッダー（`hello:world`）を追加して、`set-cookie` ヘッダーを削除します。次に、`frontend-gateway` を介してサービスメッシュに入るすべてのクライアントリクエストは、変更されたヘッダーを受信します。
 
 ```YAML
 apiVersion: networking.istio.io/v1alpha3
@@ -34,7 +34,7 @@ spec:
           - "set-cookie"
 ```
 
-VirtualServiceを適用する前に、`frontend` サービスは次の応答ヘッダーを返します。:
+VirtualServiceを適用する前だと、`frontend` サービスは次の応答ヘッダーを返します。:
 
 ```
 HTTP/1.1 200 OK
@@ -46,7 +46,7 @@ server: istio-envoy
 transfer-encoding: chunked
 ```
 
-次に、`kubectl apply` コマンドでVirtualServiceを実行すると、レスポンスヘッダーを変更するようにEnvoyが正常に構成されていることがわかります。:
+次に、`kubectl apply` コマンドでVirtualServiceを適用すると、レスポンスヘッダーを変更するようにEnvoyが正常に構成されていることがわかります。:
 
 ```
 HTTP/1.1 200 OK
