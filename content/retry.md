@@ -6,7 +6,7 @@ categories: ["Traffic Management"]
 
 マイクロサービスアーキテクチャは分散されています。これは、ネットワーク上のリクエストが増えることを意味し、ネットワークの輻輳などの一時的な障害の可能性が高まります。
 
-リクエストにリトライポリシーを追加すると、サービスアーキテクチャの復元力を構築するのに役立ちます。多くの場合、このリトライロジックは[ソースコードに組み込まれて](https://upgear.io/blog/simple-golang-retry-function/)います。ただし、Istioでは、[トラフィックルール](https://istio.io/docs/concepts/traffic-management/#set-number-and-timeouts-for-retries)を使用してリトライポリシーを定義して、このロジックをサービスの[サイドカープロキシ](https://istio.io/docs/concepts/what-is-istio/#architecture)に任せることができます。これは、多くのサービス、プロトコル、およびプログラミング言語にわたって同じポリシーを中心に標準化するのに役立ちます。
+リクエストにリトライポリシーを追加すると、サービスアーキテクチャの回復性を構築するのに役立ちます。多くの場合、このリトライロジックは[ソースコードに組み込まれて](https://upgear.io/blog/simple-golang-retry-function/)います。しかし、Istioでは、[トラフィックルール](https://istio.io/docs/concepts/traffic-management/#set-number-and-timeouts-for-retries)を使用してリトライポリシーを定義して、このロジックをサービスの[サイドカープロキシ](https://istio.io/docs/concepts/what-is-istio/#architecture)に任せることができます。これは、多くのサービス、プロトコル、およびプログラミング言語にわたって同じポリシーを中心に標準化するのに役立ちます。
 
 ![Diagram](/images/retry.png)
 
