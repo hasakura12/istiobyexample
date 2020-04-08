@@ -1,20 +1,20 @@
 ---
-title: Traffic Mirroring
+title: "トラフィックミラーリング"
 publishDate: "2019-12-31"
 categories: ["Traffic Management"]
 ---
 
-Testing a service in production is important to help ensure reliability. Sending live production traffic to a new version of a service can help reveal bugs that went untested during continuous integration and functional tests.
+信頼性を確保するには、本番環境でサービスをテストすることが重要です。稼働中の本番トラフィックをサービスの新しいバージョンに送信すると、継続的な統合と機能テスト中にテストされなかったバグを明らかにできます。
 
-Using Istio, you can use [**traffic mirroring**](https://istio.io/docs/tasks/traffic-management/mirroring/) to duplicate traffic to another service. You can incorporate a traffic mirroring rule as part of a [canary deployment](https://istiobyexample.dev/canary) pipeline, allowing you to analyze a service's behavior before sending live traffic to it.
+Istioを使用すると、[**トラフィックミラーリング**](https://istio.io/docs/tasks/traffic-management/mirroring/)を使用して、別のサービスへのトラフィックを複製できます。[カナリアデプロイメント](https://istiobyexample.dev/canary)パイプラインの一部としてトラフィックミラーリングルールを組み込むことができます。これにより、ライブトラフィックをサービスに送信する前にサービスの動作を分析できます。
 
-In this example, we have deployed a video processing pipeline to Kubernetes. The `render` service has a dependency on the `encode-prod` service, and we want to roll out a new version of `encode`, `encode-test`.
+この例では、Kubernetesにビデオ処理パイプラインをデプロイしました。`render` サービスは `encode-prod` サービスに依存しており、`encode`、 `encode-test` の新しいバージョンをロールアウトしたいと思います。
 
 ![traffic mirroring](/images/traffic-mirror.png)
 
-We can use an Istio `VirtualService` to mirror all `encode-prod` traffic to `encode-test`. The client side Envoy proxy for `render` will then send requests to both `encode-prod` (request path) and `encode-test` (mirrored path). `prod` and `test` are two subsets of the `encode` Kubernetes service, specified in an Istio `DestinationRule`.
+Istio `VirtualService` を使用して、すべての`encode-prod`トラフィックを `encode-test` にミラーリングできます。`render` 用のクライアント側のEnvoyプロキシは、`encode-prod`（リクエストパス）と`encode-test`（ミラーリングパス）の両方にリクエストを送信します。 `prod` と `test` は、Istio `DestinationRule`で指定されている `encode` Kubernetes Serviceの2つのサブセットです。
 
-**Note**: `render` [will not wait](https://www.envoyproxy.io/docs/envoy/latest/api-v2/api/v2/route/route.proto#route-routeaction-requestmirrorpolicy) to receive responses from `encode-test` — mirrored requests are "fire and forget."
+**注**：`render`は、`encode-test`からの応答の受信を[待機しません](https://www.envoyproxy.io/docs/envoy/latest/api-v2/api/v2/route/route.proto#route-routeaction-requestmirrorpolicy) —ミラーリングされたリクエストは「実行して忘れる」ことになります。
 
 ```YAML
 apiVersion: networking.istio.io/v1alpha3

@@ -1,28 +1,26 @@
 ---
-title: Virtual Machines
+title: "仮想マシン"
 publishDate: "2019-12-31"
 categories: ["Traffic Management"]
 ---
 
-Running containerized services in Kubernetes can add lots of benefits, including autoscaling, dependency isolation, and resource optimization. Adding Istio to your Kubernetes environment can radically simplify metrics aggregation and policy management, even if you're operating lots of containers.
+Kubernetesでコンテナ化されたサービスを実行すると、自動スケーリング、依存関係の分離、リソースの最適化など、多くのメリットが得られます。 IstioをKubernetes環境に追加すると、多数のコンテナーを操作している場合でも、メトリクスの集計とポリシー管理を大幅に簡略化できます。
 
-But what about stateful services, or legacy applications are running in virtual machines? Or what if you're migrating from VMs to containers? Have no fear: you can integrate virtual machines into your Istio service mesh. Let's see how.
+しかし、ステートフルサービス、またはレガシーアプリケーションが仮想マシンで実行されている場合はどうでしょうか。または、VMからコンテナーに移行する場合はどうでしょうか？心配要りません。仮想マシンをIstioサービスメッシュに統合できます。方法を見てみましょう。
 
 ![](/images/vm-call-flow.png)
 
-In this example, we are running a web application for a local library. This web app has multiple backends, all running in a Kubernetes cluster. One of our Kubernetes workloads, `inventory`, talks to a PostgreSQL database, and writes a record for each new book added to the library. This database is running in a virtual machine in another cloud region.
+この例では、地方図書館のWebアプリケーションを実行しています。このウェブアプリには複数のバックエンドがあり、すべてKubernetesクラスターで実行されています。 Kubernetesのワークロードの1つ、`inventory` は、PostgreSQLデータベースと通信し、図書館に追加された新しい本ごとにレコードを書き込みます。このデータベースは、別のクラウドリージョンの仮想マシンで実行されています。
 
-In order to get the full Istio functionality for PostgreSQL, our VM-based database, we need to install the Istio sidecar proxy on the VM, and configure it to talk to the Istio control plane running in the cluster. (Note that this is different from adding external [ServiceEntries](/external-services).) We can add our Postgres database to the mesh with three steps. You can follow along with the commands in the [demo on GitHub](https://github.com/askmeegs/postgres-library/tree/0241acce9d7e2cede0de8ac9baa1338624f716eb#-postgres-library).
+VMベースのデータベースであるPostgreSQLの完全なIstioの機能を取得するには、VMにIstioサイドカープロキシをインストールし、クラスターで実行されているIstioコントロールプレーンと通信するように構成する必要があります。（これは外部の[ServiceEntries](/external-services)を追加するのとは異なる点に注意してください。）Postgresデータベースを3つのステップでメッシュに追加できます。[GitHubのデモコマンド](https://github.com/askmeegs/postgres-library/tree/0241acce9d7e2cede0de8ac9baa1338624f716eb#-postgres-library)に従ってください。
 
 ![](/images/vm-architecture.png)
 
-1. **[Create a firewall rule](https://github.com/askmeegs/postgres-library#5-allow-pod-ip-traffic-to-the-vm) for pod-to-VM traffic**. This allows traffic from the Kubernetes pod CIDR range directly into our VM-based workload.
+1. **PodからVMへのトラフィック用の[ファイアウォールルールを作成](https://github.com/askmeegs/postgres-library#5-allow-pod-ip-traffic-to-the-vm)します。** これにより、Kubernetes PodのCIDR範囲からVMベースのワークロードに直接トラフィックを送信できます。
+2. **VM上に[Istioをインストール](https://github.com/askmeegs/postgres-library#6-prepare-a-clusterenv-file-to-send-to-the-vm)します。** サービスアカウントキー、およびVMサービスが公開するポート（この場合は、PostgreSQLクライアントポート `5432`）をコピーします。 VMの `/etc/hosts` を更新して、クラスターで実行されているIstio IngressGatewayを介して `istio.pilot` および `istio.citadel` トラフィックをルーティングします。次に、VMにIstioサイドカープロキシとノードエージェントをインストールします。ノードエージェントは、相互TLS認証のために、サイドカープロキシにマウントするクライアント証明書を生成します。`systemctl` を使用してプロキシとノードエージェントを起動します。
+3. **Kubernetesのワークロード[VMに登録](https://github.com/askmeegs/postgres-library#8-register-the-vm-with-istio-running-on-the-gke-cluster)します。** Postgresデータベースをメッシュに追加するには、2つのKubernetesリソースが必要です。 1つは `ServiceEntry`です。これにより、KubernetesのDNS名で仮想マシンのIPアドレスにルーティング可能になります。最後に、そのDNSエントリを作成するには、Kubernetesの `Service` が必要です。これにより、クライアントPodが `postgres-1-vm.default.svc.cluster.local` で[データベース接続を開始](https://github.com/askmeegs/postgres-library/blob/master/main.go#L39)できるようになります。これを行うには、`istioctl register` コマンドを使用できます。
 
-2. **[Install Istio](https://github.com/askmeegs/postgres-library#6-prepare-a-clusterenv-file-to-send-to-the-vm) on the VM**. Copy the service account keys, and the ports the VM service exposes (in this case, PostgreSQL client port `5432`). Update the `/etc/hosts` on the VM to route `istio.pilot` and `istio.citadel` traffic through the Istio IngressGateway running on the cluster. Then, install the Istio sidecar proxy and node agent on the VM. The node agent is responsible for generating client certificates to mount into the sidecar proxy, for mutual TLS authentication. Start the proxy and node agent using `systemctl`.
-
-3. **[Register the VM](https://github.com/askmeegs/postgres-library#8-register-the-vm-with-istio-running-on-the-gke-cluster) workload with Kubernetes**. We need two Kubernetes resources to add our Postgres database to the mesh. The first is a `ServiceEntry`. This will route the Kubernetes DNS name to the virtual machine IP address. Finally, we need a Kubernetes `Service` to create that DNS entry. This is what will allow our client pod to [start a database connection](https://github.com/askmeegs/postgres-library/blob/master/main.go#L39) at `postgres-1-vm.default.svc.cluster.local`. We can use the `istioctl register` command to do this.
-
-We can now verify that the Kubernetes-based client can successfully write to the database, by viewing the pod logs:
+Podのログを見ることで、Kubernetesベースのクライアントがデータベースに正常に書き込めることを確認できます。:
 
 ```
 postgres-library-6bb956f86b-dt94x server ✅ inserted Fun Home
@@ -30,7 +28,7 @@ postgres-library-6bb956f86b-dt94x server ✅ inserted Infinite Jest
 postgres-library-6bb956f86b-dt94x server ✅ inserted To the Lighthouse
 ```
 
-And we can verify that the sidecar proxy running on the VM is intercepting inbound traffic on port `5432`, by viewing the Envoy access logs on the VM.
+また、VM上にあるEnvoyのアクセスログを見ることで、VM上で実行されているサイドカープロキシがポート `5432` で内向きのトラフィックを傍受していることを確認できます。
 
 ```
 $ tail /var/log/istio/istio.log
@@ -41,12 +39,11 @@ $ tail /var/log/istio/istio.log
 outbound_.5432_._.postgresql-1-vm.default.svc.cluster.local -
 ```
 
-We can also see TCP metrics flowing in the Kiali service graph:
+KialiサービスグラフでTCPメトリックフローを確認することもできます。:
 
 ![](/images/vm-kiali.png)
 
-
-From here, we can use any Istio traffic or security policies to our multi-environment service mesh. For instance, we can encrypt all traffic between the cluster and the VM, by adding a mesh-wide mutual TLS policy:
+ここから、マルチ環境のサービスメッシュで、すべてのIstioトラフィックやセキュリティポリシーを使用できます。たとえば、メッシュ全体の相互TLSポリシーを追加することで、クラスターとVM間のすべてのトラフィックを暗号化できます。:
 
 ```YAML
 apiVersion: "authentication.istio.io/v1alpha1"
@@ -70,7 +67,7 @@ spec:
 ```
 
 
-To learn more:
-- [Run this example in your environment](https://github.com/askmeegs/postgres-library)
-- [Try another example](https://github.com/GoogleCloudPlatform/istio-samples/tree/master/mesh-expansion-gce)
-- [See the Istio documentation](https://istio.io/docs/examples/virtual-machines/single-network/)
+より詳しく学ぶ:
+- [ご自身の環境でこの例を動かしてみましょう](https://github.com/askmeegs/postgres-library)
+- [別のサンプル例](https://github.com/GoogleCloudPlatform/istio-samples/tree/master/mesh-expansion-gce)
+- [Istioのドキュメントをご覧ください](https://istio.io/docs/examples/virtual-machines/single-network/)
