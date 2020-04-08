@@ -10,9 +10,9 @@ Istioは、**ローカリティロードバランシング**と呼ばれる機�
 
 ![default](/images/loc-default.png)
 
-ここでは、`us-central` と `us-east` の2つの異なるクラウドリージョンで実行されている2つのKubernetesクラスターがあります。 Istioコントロールプレーンは `us-east` で実行されており、両方のクラスターで実行されているサービスが互いに到達できるように、[単一のコントロールプレーン](https://github.com/GoogleCloudPlatform/istio-samples/tree/191859c03e73da7e98d451c967cefe24101d1933/multicluster-gke/single-control-plane#demo-multicluster-istio--single-control-plane)のIstioマルチクラスターをセットアップしました。
+ここでは、`us-central` と `us-east` の2つの異なるクラウドリージョンで実行されている2つのKubernetesクラスターがあります。ここでは、`us-central` と `us-east` の2つの異なるクラウドリージョンで実行されている2つのKubernetesクラスターがあります。 両クラスター内のServiceが互いに通信できるよう、[シングルコントロールプレーン](https://github.com/GoogleCloudPlatform/istio-samples/tree/191859c03e73da7e98d451c967cefe24101d1933/multicluster-gke/single-control-plane#demo-multicluster-istio--single-control-plane)によるIstioマルチクラスターがセットアップされており、そのIstioコントロールプレーンは `us-east` で稼働しています。
 
-両方のクラスターを起動したときに、クラウドプロバイダーはリージョン固有の `failure-domain` をKubernetesノードに追加しました。:
+両方のクラスターを起動したときに、クラウドプロバイダーはリージョン固有の `failure-domain` ラベルをKubernetesノードに追加しました。:
 
 ```
 failure-domain.beta.kubernetes.io/region: us-central1
@@ -23,7 +23,7 @@ Istioはこれらのローカリティラベルをリクエストに付与して
 
 両方のクラスターは、`echo` と呼ばれる Istio-injected サービスを実行しています。これは、ポート `80` でアクセスが来たときにその内容を返します。中央クラスターは、`echo.default.svc.cluster.local:80` を毎秒呼び出す `loadgen` サービスも実行しています。
 
-デフォルトでは、Kubernetes Serviceの動作は、両クラスタの2つの `echo` サーバー間でのラウンドロビン方式です。:
+デフォルトでは、このKubernetes Serviceの動作は、両クラスタの2つの `echo` サーバー間でのラウンドロビン方式です。:
 
 ```
 $ 🌊 Hello World! - EAST
@@ -32,7 +32,7 @@ $ 🌊 Hello World! - EAST
 $ ✨ Hello World! - CENTRAL
 ```
 
-`east` クラスタに [Outlier Detection](https://istio.io/docs/reference/config/networking/destination-rule/#OutlierDetection)定義を Istio DestinationRuleマニフェストファイルに追加することにより、ローカリティロードバランシングを有効にできます。:
+[Outlier Detection](https://istio.io/docs/reference/config/networking/destination-rule/#OutlierDetection)を設定したIstioのDestinationRuleリソースを `east` クラスタに追加することにより、ローカリティロードバランシングを有効にできます。:
 
 ```YAML
 apiVersion: networking.istio.io/v1alpha3
