@@ -10,7 +10,7 @@ Istioは、**ローカリティロードバランシング**と呼ばれる機�
 
 ![default](/images/loc-default.png)
 
-ここでは、`us-central` と `us-east` の2つの異なるクラウドリージョンで実行されている2つのKubernetesクラスターがあります。ここでは、`us-central` と `us-east` の2つの異なるクラウドリージョンで実行されている2つのKubernetesクラスターがあります。 両クラスター内のServiceが互いに通信できるよう、[シングルコントロールプレーン](https://github.com/GoogleCloudPlatform/istio-samples/tree/191859c03e73da7e98d451c967cefe24101d1933/multicluster-gke/single-control-plane#demo-multicluster-istio--single-control-plane)によるIstioマルチクラスターがセットアップされており、そのIstioコントロールプレーンは `us-east` で稼働しています。
+ここでは、`us-central` と `us-east` の2つの異なるクラウドリージョンで実行されている2つのKubernetesクラスターがあります。両クラスター内のServiceが互いに通信できるよう、[シングルコントロールプレーン](https://github.com/GoogleCloudPlatform/istio-samples/tree/191859c03e73da7e98d451c967cefe24101d1933/multicluster-gke/single-control-plane#demo-multicluster-istio--single-control-plane)によるIstioマルチクラスターがセットアップされており、そのIstioコントロールプレーンは `us-east` で稼働しています。
 
 両方のクラスターを起動したときに、クラウドプロバイダーはリージョン固有の `failure-domain` ラベルをKubernetesノードに追加しました。:
 
