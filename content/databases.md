@@ -5,7 +5,7 @@ categories: ["Traffic Management"]
 ---
 
 
-アプリケーションは複数の環境にまたがる場合が多く、データベースはその良い例です。レガシーまたはストレージの理由で、データベースを[Kubernetesの外](https://cloud.google.com/blog/products/databases/to-run-or-not-to-run-a-database-on-kubernetes-what-to-consider)で実行することを選択するか、マネージドデータベースサービスを使用することができます。
+アプリケーションは複数の環境にまたがる場合が多く、データベースはその良い例です。レガシーまたはストレージの理由で、データベースを[Kubernetesの外](https://cloud.google.com/blog/products/databases/to-run-or-not-to-run-a-database-on-kubernetes-what-to-consider)で稼働しているかもしれません。もしくはマネージドデータベースサービスを使用していることもあります。
 
 しかし心配は要りません！ Istioサービスメッシュに外部データベースを追加できます。方法を見てみましょう。
 
@@ -40,13 +40,13 @@ spec:
 
 ![kiali](/images/databases-kiali-no-vs.png)
 
-`plants` のサイドカープロキシがFirestore TLSトラフィックを [plain TCPとして](https://github.com/istio/istio/issues/14933)受信しているため、トラフィックはTCPとして表示されることに注意してください。グラフの先頭は、Firestoreへのリクエストスループットの数をビット/秒で示しています。
+`plants` のサイドカープロキシがFirestore TLSトラフィックを [プレーンなTCPとして](https://github.com/istio/istio/issues/14933)受信しているため、トラフィックはTCPとして表示されることに注意してください。グラフの先頭は、Firestoreへのリクエストスループットの値をビット/秒で示しています。
 
 ここで、データベースに接続できない場合の `plants` の動作をテストするとします。アプリケーションコードを変更せずに、Istioで行えます。
 
 Istioは現在TCPフォールトインジェクションをサポートしていませんが、Firestore APIトラフィックを別の「ブラックホール」サービスに送信する[TCPトラフィックルール](https://istio.io/docs/reference/config/networking/virtual-service/#TCPRoute)を作成して、Firestoreへのクライアント接続を効果的に切断することができます。
 
-これを行うには、クラスター内に小さな `echo` サービスをデプロイして、代わりにすべてのFirestoreトラフィックを `echo` サービスに転送します。:
+これを行うには、クラスター内に小さな `echo` サービスをデプロイして、Firestoreへの全トラフィックを `echo` サービスに転送します。:
 
 ```YAML
 apiVersion: networking.istio.io/v1alpha3
@@ -72,7 +72,7 @@ writing a new plant to Firestore...
 🚫 Failed adding plant: rpc error: code = Unavailable desc = all SubConns are in TransientFailure
 ```
 
-そして、サービスグラフでは、`firestore` ノードに紫色の `VirtualService` アイコンがあることがわかります。これは、そのサービスに対してIstioトラフィックルールを適用したことを意味します。最終的に、すべての送信接続をデータベースにリダイレクトしたため、firestoreへのスループットは最後の1分間は `0` と表示されます。
+そして、サービスグラフでは、`firestore` ノードに紫色の `VirtualService` アイコンがあることがわかります。これは、そのサービスに対してIstioトラフィックルールを適用したことを意味します。データベースへの全ての外部接続をリダイレクトしたため、やがて直近1分間のFirestoreのスループットは `0` になります。
 
 ![kiali](/images/databases-kiali.png)
 
