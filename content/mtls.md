@@ -1,12 +1,12 @@
 ---
-title: Mutual TLS
+title: 相互TLS
 publishDate: "2019-12-31"
 categories: ["Security"]
 ---
 
-A microservices architecture means more requests on the network, and more opportunities for malicious parties to intercept traffic. [Mutual TLS](https://en.wikipedia.org/wiki/Mutual_authentication) (mTLS) authentication is a way to encrypt services traffic using [certificates](https://www.internetsociety.org/deploy360/tls/basics/).
+マイクロサービスアーキテクチャは、ネットワーク上のリクエストが増えることと、悪意のある当事者がトラフィックを傍受する機会が増えることを意味します。[相互TLS](https://en.wikipedia.org/wiki/Mutual_authentication)（mTLS）認証は、[証明書](https://www.internetsociety.org/deploy360/tls/basics/)を使用してサービストラフィックを暗号化する方法です。
 
-With Istio, you can automate the enforcement of mTLS across all services. Below, we enable mTLS for the entire mesh. Two pods in the cluster, `client` and `server`, are shown establishing a secure connection with the mTLS policy in place.
+Istioを使用すると、すべてのサービスにわたるmTLSの適用を自動化できます。以下では、メッシュ全体に対してmTLSを有効にします。クラスター内の2つのPod（ `クライアント` と `サーバー` ）は、mTLSポリシーを使用してセキュアな接続を確立しているところを示しています。
 
 ![Diagram](/images/mtls.png)
 
@@ -35,22 +35,20 @@ spec:
       mode: ISTIO_MUTUAL
 ```
 
-Here, a `MeshPolicy` enforces TLS for all services *receiving* requests (server-side), and a `DestinationRule` enforces TLS for all services *sending* requests (client-side), resulting in mutual ("both") TLS.
+ここでは、`MeshPolicy` はリクエストを受信するすべてのサービス（サーバー側）にTLSを適用し、`DestinationRule` はリクエストを送信するすべてのサービス（クライアント側）にTLSを適用し、相互（「両方」）のTLSを作成します。
 
-**Authentication Flow:**
+**認証フロー：**
 
-1. `client` application container sends a plain-text HTTP request to `server`.
-2. `client` proxy container intercepts the outbound request.
-3. `client` proxy performs a TLS [handshake](https://www.ibm.com/support/knowledgecenter/en/SSFKSJ_7.1.0/com.ibm.mq.doc/sy10660_.htm) with the server-side proxy. This handshake includes an exchange of certificates. These certs are pre-loaded into the proxy containers by Istio.
-4. `client` proxy performs a [secure naming](https://istio.io/docs/concepts/security/#secure-naming) check on the server's certificate, verifying that an authorized identity is running the `server`.
-5. `client` and `server` establish a mutual TLS connection, and the `server` proxy forwards the request to the `server` application container.
+1. `クライアント` アプリケーションコンテナーはプレーンテキストのHTTPリクエストを `サーバー` に送信します。
+2. `クライアント` プロキシコンテナーが外向けのリクエストを傍受します。
+3. `クライアント` プロキシは、サーバー側プロキシとTLS[ハンドシェイク](https://www.ibm.com/support/knowledgecenter/en/SSFKSJ_7.1.0/com.ibm.mq.doc/sy10660_.htm)を実行します。このハンドシェイクには、証明書の交換が含まれます。これらの証明書は、Istioによってプロキシコンテナーにプリロードされます。
+4. `クライアント` プロキシは、サーバーの証明書に対して[セキュアな名前付け](https://istio.io/docs/concepts/security/#secure-naming)チェックを実行し、承認されたIDが `サーバー` を実行していることを確認します。
+5. `クライアント` と `サーバー` は相互TLS接続を確立し、 `サーバー` プロキシはリクエストを `サーバー` アプリケーションコンテナーに転送します。
 
+**詳しく学ぶ**：
 
-
-**Learn more**:
-
-- [Istio Docs - Authentication](https://istio.io/docs/concepts/security/#authentication)
-- [Samples: Authentication](https://github.com/GoogleCloudPlatform/istio-samples/tree/77fb1dfb690d28517e410df2911e255d54e3450e/security-intro#authentication)
-- [Task - Authentication Policies](https://istio.io/docs/tasks/security/authn-policy/)
-- [Task - Mutual TLS Deep-Dive](https://istio.io/docs/tasks/security/mutual-tls/)
+- [Istio Docs - 認証](https://istio.io/docs/concepts/security/#authentication)
+- [サンプル: 認証](https://github.com/GoogleCloudPlatform/istio-samples/tree/77fb1dfb690d28517e410df2911e255d54e3450e/security-intro#authentication)
+- [タスク - 認証ポリシー](https://istio.io/docs/tasks/security/authentication/authn-policy/)
+- [タスク - 相互TLS Deep-Dive](https://istio.io/pt-br/docs/tasks/security/authentication/mutual-tls/)
 - [FAQ - mTLS](https://istio.io/faq/security/#enabling-disabling-mtls)
