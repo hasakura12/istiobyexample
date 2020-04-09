@@ -1,24 +1,24 @@
 ---
-title: Authorization
+title: "認可"
 publishDate: "2019-12-31"
 categories: ["Security"]
 ---
 
-Authentication means verifying the identity of a client. **Authorization**, on the other hand, verifies the permissions of that client, or: "can this service do what they're asking to do?"
+認証とは、クライアントの身元を確認することです。一方、**認可**では、そのクライアントのアクセス権限を確認します。すなわち、「このサービスは、クライアントの要求を実行可能かどうか？」を確認します。
 
-While all requests in an Istio mesh are allowed by default, [Istio provides](https://istio.io/docs/concepts/security/#authorization) an [`AuthorizationPolicy` resource](https://istio.io/docs/reference/config/security/authorization-policy/) that allows you to define granular policies for your workloads. Istio translates your AuthorizationPolicies into Envoy-readable config, then mounts that config into the Istio sidecar proxies. From there, authorization policy checks are performed by the sidecar proxies. Let's see how it works.
+Istioメッシュのすべてのリクエストはデフォルトで許可されていますが、ワークロードのきめ細かなポリシーを定義できる[`AuthorizationPolicy` resource](https://istio.io/docs/reference/config/security/authorization-policy/)を[Istioは提供](https://istio.io/docs/concepts/security/#authorization)します。 IstioはAuthorizationPoliciesをEnvoyで読み取り可能な構成に変換し、その構成をIstioサイドカープロキシにマウントします。そこから、認可ポリシーチェックがサイドカープロキシによって実行されます。それがどのように機能するか見てみましょう。
 
 ![shoes rbac](/images/rbac.png)
 
-Here, the _ShoeStore_ application is deployed to the `default` Kubernetes namespace. There are three HTTP workloads, each defined with their own Kubernetes Deployment, Service, and ServiceAccount.
+ここでは、ShoeStoreアプリケーションが Kubernetesの `default` Namespaceにデプロイされています。3つのHTTPワークロードがあり、それぞれ独自のKubernetes Deployment、Service、ServiceAccountで定義されています。
 
-1. **shoes**: exposes an API for all the shoes in the store
-2. **users**: stores purchase history
-3. **inventory**: loads new shoe models into shoes.
+1. **shoes**：ストア内のすべての靴のAPIを公開
+2. **users**：ストアの購入履歴
+3. **inventory**：新しい靴モデルをshoesにロードします。
 
-We want to authorize the inventory service to be able to `POST` data to the shoes services, and then lock down all access to the users service. To do this, we will create two `AuthorizationPolicies`: one for `shoes`, and one for `users`.
+inventoryサービスがshoesサービス にデータを `POST` できるように認可し、usersサービスへのすべてのアクセスをロックします。これを行うには、`shoes` 用と `users` 用の2つの `AuthorizationPolicies` を作成します。
 
-Before deploying any policies, we can access both shoes and users from inside the inventory service's application container.
+ポリシーをデプロイする前は、inventoryサービスのアプリケーションコンテナー内からshoesとusersの両方にアクセスできます。
 
 ```bash
 $ curl -X GET shoes
@@ -30,7 +30,7 @@ $ curl -x GET users
 👥 Users service
 ```
 
-First, let's create an AuthorizationPolicy for `shoes`:
+まず、`shoes` 用のAuthorizationPolicyを作成します。：
 
 ```YAML
 apiVersion: "security.istio.io/v1beta1"
@@ -51,35 +51,34 @@ spec:
         methods: ["POST"]
 ```
 
-In this policy:
-- The `selector` on `shoes` means we're enforcing any Deployment labeled with `app:shoes`.
-- The `source` workload we're allowing has the `inventory-sa` identity. In a Kubernetes environment, this means that only pods with the `inventory-sa` [Service Account](https://kubernetes.io/docs/tasks/configure-pod-container/configure-service-account/) can access shoes. (**Note**: You must [enable Istio mutual TLS authentication](https://istio.io/docs/tasks/security/authentication/authn-policy/#globally-enabling-istio-mutual-tls) to use service account-based authorization policies. Mutual TLS is what allows the workload's [service account](https://istio.io/docs/concepts/security/#istio-security-vs-spiffe) certificates to be passed in the request.)
-- The only whitelisted HTTP operation is `POST`, meaning that other HTTP operations, like `GET`, will be denied.
+このポリシーでは：
 
+- `shoes` の `selector` は、`app：shoes` というラベルの付いたDeploymentに適用されることを意味します。
+- 私たちが許可している `source` ワークロードには、`inventory-sa` IDがあります。これは、Kubernetes環境では、`inventory-sa` [サービスアカウント](https://kubernetes.io/docs/tasks/configure-pod-container/configure-service-account/)を持つPodのみがshoesにアクセスできることを意味します。（**注**：サービスアカウントベースの認可ポリシーを使用するには、[Istio相互TLS認証](https://istio.io/docs/tasks/security/authentication/authn-policy/#globally-enabling-istio-mutual-tls)を有効にする必要があります。相互TLSにより、ワークロードの[サービスアカウント](https://istio.io/docs/concepts/security/#istio-security-vs-spiffe)証明書をリクエストで渡すことができます。）
+- ホワイトリストに登録されている唯一のHTTP操作は `POST` です。つまり、`GET` などの他のHTTP操作は拒否されます。
 
-
-Once we apply the `shoes-writer` policy, we can successfully `POST` from inventory:
+`shoes-writer` のポリシーを適用したら、inventoryから `POST` することができます。
 
 ```
 $ curl -X POST shoes
 🥾 Shoes service
 ```
 
-But `GET` requests from `inventory` are denied:
+ただし、`inventory` からの `GET` リクエストは拒否されます。:
 
 ```
 $ curl -X GET shoes
 RBAC: access denied
 ```
 
-And if we try to `POST` from a workload other than `inventory`, for instance, from `users`, the request will be denied:
+また、`users` など、`inventory` 以外のワークロードから `POST` しようとすると、リクエストが拒否されます。:
 
 ```
 $ curl -X POST shoes
 RBAC: access denied
 ```
 
-Next, let's create a "deny-all" policy for the users service:
+次に、usersサービスの「deny-all」ポリシーを作成します。：
 
 ```YAML
 apiVersion: "security.istio.io/v1beta1"
@@ -93,19 +92,19 @@ spec:
       app: users
 ```
 
-Note that there are no `rules` for this service, just a `matchLabels` for our users Deployment. Also note that [the difference](https://istio.io/docs/concepts/security/#allow-all-and-deny-all) between a deny-all and an allow-all AuthorizationPolicy is subtle: in an allow-all policy, you would specify `rules: {}`.
+このサービスには `rules` がないことに注意してください。users Deploymentの `matchLabels` のみです。また、deny-allとallow-all AuthorizationPolicyの[違い](https://istio.io/docs/concepts/security/#allow-all-and-deny-all)はわずかであることに注意してください。allow-allポリシーでは、`rules: {}` を指定します。
 
-Once we apply this resource, we are no longer able to access users from any of our services:
+このリソースを適用すると、どのサービスからもusersにアクセスできなくなります。：
 
 ```
 $ curl users
 RBAC: access denied
 ```
 
-To learn more:
+詳しく学ぶ:
 
-- [Manifests for this example](https://github.com/askmeegs/istiobyexample/tree/master/yaml/authorization)
-- [Istio blog - Introducing the Istio v1beta1 Authorization Policy](https://istio.io/blog/2019/v1beta1-authorization-policy/)
-- [Istio docs - Authorization concepts](https://istio.io/docs/concepts/security/#authorization)
-- [Istio docs - Authorization task](https://istio.io/docs/tasks/security/authorization/authz-http/)
-- [Istio Samples - Introduction to Istio Security](https://github.com/GoogleCloudPlatform/istio-samples/tree/6fa69cf46424c055535ddbdc22f715e866c4d179/security-intro#demo-introduction-to-istio-security)
+- [この例のマニフェストファイル](https://github.com/askmeegs/istiobyexample/tree/master/yaml/authorization)
+- [Istio ブログ - Istio v1beta1認可ポリシーの紹介](https://istio.io/blog/2019/v1beta1-authorization-policy/)
+- [Istio docs - 認可の概念](https://istio.io/docs/concepts/security/#authorization)
+- [Istio docs - 認可タスク](https://istio.io/docs/tasks/security/authorization/authz-http/)
+- [Istio サンプル - Istioセキュリティの概要](https://github.com/GoogleCloudPlatform/istio-samples/tree/6fa69cf46424c055535ddbdc22f715e866c4d179/security-intro#demo-introduction-to-istio-security)

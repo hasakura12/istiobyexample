@@ -74,7 +74,7 @@ thumb = "/images/t-vms.png"
 url = "/virtual-machines"
 
 [[security]]
-title = "Mutual TLS"
+title = "相互TLS"
 thumb = "/images/t-mtls.png"
 url = "/mtls"
 
@@ -84,16 +84,16 @@ thumb = "/images/t-jwt.png"
 url = "/jwt"
 
 [[security]]
-title = "Authorization"
+title = "認可"
 thumb = "/images/t-authz.png"
 url = "/authorization"
 
 [[security]]
-title = "Secure Ingress"
+title = "セキュアなIngress"
 thumb = "/images/t-secure-ingress.png"
 url = "/secure-ingress"
 
 [[observability]]
-title = "Bring Your Own Prometheus"
+title = "Prometheusの持ち込み"
 thumb = "/images/t-prometheus.png"
 url = "/prometheus"
