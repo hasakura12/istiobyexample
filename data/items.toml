@@ -19,57 +19,57 @@ thumb = "/images/t-currency.png"
 url = "/external-services"
 
 [[traffic]]
-title = "Load Balancing"
+title = "負荷分散"
 thumb = "/images/t-lb.png"
 url = "/load-balancing"
 
 [[traffic]]
-title = "Locality Load Balancing"
+title = "ローカリティロードバランシング"
 thumb = "/images/t-locality.png"
 url = "/locality-load-balancing"
 
 [[traffic]]
-title = "Path-Based Routing"
+title = "Pathに基づいたルーティング"
 thumb = "/images/t-path.png"
 url = "/path-based-routing"
 
 [[traffic]]
-title = "Modify Response Headers"
+title = "レスポンスヘッダーの変更"
 thumb = "/images/t-headers.png"
 url = "/response-headers"
 
 [[traffic]]
-title = "Retry Logic"
+title = "リトライロジック"
 thumb = "/images/t-retry.png"
 url = "/retry"
 
 [[traffic]]
-title = "Fault Injection"
+title = "フォールトインジェクション"
 thumb = "/images/t-fault-injection.png"
 url = "/fault-injection"
 
 [[traffic]]
-title = "Database Traffic"
+title = "データベーストラフィック"
 thumb = "/images/t-databases.png"
 url = "/databases"
 
 [[traffic]]
-title = "Traffic Mirroring"
+title = "トラフィックミラーリング"
 thumb = "/images/t-mirroring.png"
 url = "/traffic-mirroring"
 
 [[traffic]]
-title = "Monitoring Egress Traffic"
+title = "Egressトラフィック監視"
 thumb = "/images/t-ptbh.png"
 url = "/monitoring-egress-traffic"
 
 [[traffic]]
-title = "Multiple Traffic Rules"
+title = "複数のトラフィックルール"
 thumb = "/images/t-multiple.png"
 url = "/multiple-traffic-rules"
 
 [[traffic]]
-title = "Virtual Machines"
+title = "仮想マシン"
 thumb = "/images/t-vms.png"
 url = "/virtual-machines"
 

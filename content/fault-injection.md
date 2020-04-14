@@ -1,23 +1,23 @@
 ---
-title: "Fault Injection"
+title: "フォールトインジェクション"
 publishDate: "2019-12-31"
 categories: ["Traffic Management"]
 ---
 
-Adopting microservices often means more dependencies, and more services you might not control. It also means more requests on the network, increasing the possibility for errors. For these reasons, it's important to test your services' behavior when upstream dependencies fail.
+マイクロサービスを採用すると、多くの場合、依存関係が増え、制御できないサービスが増えます。また、ネットワーク上のリクエストが増えるため、エラーが発生する可能性が高くなります。これらの理由により、アップストリームの依存関係が失敗したときのサービスにおける動作をテストすることが重要です。
 
-**[Chaos testing](https://en.wikipedia.org/wiki/Chaos_engineering)** is the process of deliberately breaking your services in order to expose weaknesses and improve fault tolerance. Chaos testing can reveal client-side bugs, or identify user-facing failure situations where you might want to display a cached result, instead of returning an error.
+**[カオステスト](https://en.wikipedia.org/wiki/Chaos_engineering)** は、弱点を明らかにし、フォールトトレランスを向上させるために、サービスを意図的に壊すプロセスです。カオステストでは、エラーを返す代わりに、クライアント側のバグを明らかにしたり、エラーを返すのではなくキャッシュされた結果を表示したいと思うようなユーザーが直面する問題の状況を特定したりすることができます。
 
-In a Kubernetes environment, you can approach chaos testing at different layers - for instance, by [deleting pods at random](https://github.com/asobti/kube-monkey#kube-monkey--), or shutting off entire nodes.
+Kubernetes環境では、[Podをランダムに削除](https://github.com/asobti/kube-monkey#kube-monkey--)したり、ノード全体をシャットダウンしたりするなど、さまざまなレイヤーでのカオステストに取り組むことができます。
 
-But failures also happen at the application layer. Infinite loops, broken client libraries - application code can fail in an infinite number of ways! This is where Istio **[fault injection](https://istio.io/docs/concepts/traffic-management/#fault-injection)** comes in. You can use Istio VirtualServices to do chaos testing at the application layer, by injecting timeouts or HTTP errors into your services, without actually updating your app code. Let's see how.
+ただし、障害はアプリケーション層でも発生します。無限ループ、壊れたクライアントライブラリ-アプリケーションコードは無限に失敗する可能性があります！ここで Istio **[fault injection](https://istio.io/docs/concepts/traffic-management/#fault-injection)** の出番です。Istio VirtualServicesを使用して、実際にアプリのコードを更新せずに、タイムアウトまたはHTTPエラーをサービスに起こすことにより、アプリケーションレイヤーでカオステストを実行できます。方法を見てみましょう。
 
 ![](/images/fault-injection.png)
 
 
-In this example, a wind energy company runs two Kubernetes clusters: one in the cloud, and one in an offshore wind farm. These two clusters are connected together using [multicluster Istio, with a single control plane](https://istio.io/docs/setup/install/multicluster/shared-gateways/) running in the cloud cluster (*note* - this example would also work in a single-cluster setup). There are three services: `ingest` processes sensor data from the turbines, and writes to an on-prem timeseries database. `insights` polls the database to detect anomalies in the power supply, sending a message to `alerts`, running in the cloud, when there is a potential threat to the power grid.
+この例では、風力エネルギー会社が2つのKubernetesクラスターを実行しています。1つはクラウド内、もう1つはオフショアの風力発電所内です。これら2つのクラスターは、[単一のコントロールプレーンのマルチクラスタ構成のIstio](https://istio.io/docs/setup/install/multicluster/shared-gateways/)を使用して相互に接続されて、クラウド側クラスターで実行されます（*注*-この例は、単一クラスターセットアップでも機能します）。 3つのサービスがあります。`ingest` は、タービンからのセンサーデータを処理し、オンプレミスの時系列データベースに書き込みます。`insights` は発電機の異常検出のためにデータベースをポーリングし，電力系統への潜在的な驚異がある場合，クラウドで稼働する `alerts` にメッセージを送信します。
 
-When the insights service is unable to call home to `alerts`, we want to ensure that the anomaly does not get lost - ideally, insights will cache the alert, or we use Istio [retry logic](/retry) to send the request again. To test what happens in this failure scenario, we will use Istio to inject a fault into the `alerts` service: first, we'll add a 5-second delay, followed by a `500 - Internal Server Error`:
+insights サービスが `alerts` のホームを呼び出せない場合、異常が失われないようにする必要があります。理想的には、insights がアラートをキャッシュするか、Istioの[リトライロジック](/retry)を使用してリクエストを再送信します。この障害シナリオで何が発生するかをテストするために、Istioを使用して `alerts` サービスに障害を起こします。最初に5秒の遅延を追加し、次に `500 - Internal Server Error` を追加します。:
 
 ```YAML
 apiVersion: networking.istio.io/v1alpha3
@@ -42,7 +42,7 @@ spec:
         host: alerts
 ```
 
-When we apply this VirtualService, we can curl `alerts` from the `insights` application container, and see the configured timeout, followed by a 500 error:
+このVirtualServiceを適用し、`insights` アプリケーションコンテナーから `alerts` に curl でアクセスすると、構成されたタイムアウトに続いて500エラーが表示されます。:
 
 ```bash
 $ curl -v alerts.default.svc.cluster.local:80/
@@ -55,15 +55,13 @@ $ curl -v alerts.default.svc.cluster.local:80/
 fault filter abort
 ```
 
-And we can examine the `insights` logs to see how the client side handled that failure.
+そして、`insights` ログを調べて、クライアント側がその失敗をどのように処理したかを確認できます。
 
-Note that you can customize these fault injection rules - for instance, fail multiple services at once (by adding more VirtualServices), fail only a [percentage of requests](https://istio.io/docs/reference/config/networking/virtual-service/#HTTPFaultInjection-Abort), or fail only on certain HTTP request headers (like `user-agent`, to test the behavior on certain web browsers).
-You might also want to create your own chaos testing wrapper around Istio, in order to automate the end-to-end chaos testing process (add fault injection rule, inspect client behavior / state). To do this, you could use the [Istio Golang client library](https://github.com/istio/client-go) to programmatically lifecycle VirtualServices on a cluster.
+これらのフォールトインジェクションルールをカスタマイズできることに注意してください。たとえば、（VirtualServicesを追加することで）一度に複数のサービスを失敗させる、[指定した割合のリクエストのみを失敗させる](https://istio.io/docs/reference/config/networking/virtual-service/#HTTPFaultInjection-Abort)、または特定のHTTPリクエストヘッダー（特定のWebブラウザーの挙動をテストするための `user-agent` など）のみ失敗させることなどが可能です。
+エンドツーエンドのカオステストプロセスを自動化するために、独自のカオステストラッパーを作成することもできます（フォールトインジェクションルールの追加、クライアントの動作/状態の検査）。これを行うには、[Istio Golangクライアントライブラリ](https://github.com/istio/client-go)を使用して、クラスター上のVirtualServicesに対し，プログラム的なライフサイクルを回すことができます。
 
+ソース：
 
-Sources:
-
-- [Istio Docs - Task: Fault Injection](https://istio.io/docs/tasks/traffic-management/fault-injection/)
-- [Istio Docs - Reference: Fault Injection](https://istio.io/docs/reference/config/networking/virtual-service/#HTTPFaultInjection)
-- [Delivering Renewable Energy with
-Kubernetes (Kubecon China 2018)](https://static.sched.com/hosted_files/kccncchina2018english/18/ShengLiang-En.pdf)
+- [Istio Docs - タスク：フォールトインジェクション](https://istio.io/docs/tasks/traffic-management/fault-injection/)
+- [Istio Docs - リファレンス：フォールトインジェクション](https://istio.io/docs/reference/config/networking/virtual-service/#HTTPFaultInjection)
+- [Delivering Renewable Energy with Kubernetes（Kubecon China 2018）](https://static.sched.com/hosted_files/kccncchina2018english/18/ShengLiang-En.pdf)

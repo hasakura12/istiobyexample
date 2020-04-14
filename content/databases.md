@@ -1,24 +1,24 @@
 ---
-title: Database Traffic
+title: "データベーストラフィック"
 publishDate: "2019-12-31"
 categories: ["Traffic Management"]
 ---
 
 
-Applications often span multiple environments, and databases are a great example. You might choose to run your database [outside of Kubernetes](https://cloud.google.com/blog/products/databases/to-run-or-not-to-run-a-database-on-kubernetes-what-to-consider) for legacy or storage reasons, or you might use a managed database service.
+アプリケーションは複数の環境にまたがる場合が多く、データベースはその良い例です。レガシーまたはストレージの理由で、データベースを[Kubernetesの外](https://cloud.google.com/blog/products/databases/to-run-or-not-to-run-a-database-on-kubernetes-what-to-consider)で稼働しているかもしれません。もしくはマネージドデータベースサービスを使用していることもあります。
 
-But fear not! You can still add external databases to your Istio service mesh. Let's see how.
+しかし心配は要りません！ Istioサービスメッシュに外部データベースを追加できます。方法を見てみましょう。
 
 ![diagram](/images/databases-diagram.png)
 
-Here, we have a `plants` service running inside a Kubernetes cluster, with Istio enabled. `plants` writes inventory to a [Firestore](https://firebase.google.com/docs/firestore) NoSQL database running in Google Cloud, using the Golang client library for Firestore. Its logs look like this:
+ここでは、Istioが有効になっているKubernetesクラスター内で実行されている `plants` サービスがあります。`plants` は、[Firestore](https://firebase.google.com/docs/firestore)用のGolangクライアントライブラリを使用して、Google Cloudで実行されているFirestore NoSQLデータベースにインベントリを書き込みます。ログは次のようになります。:
 
 ```bash
 writing a new plant to Firestore...
 ✅success
 ```
 
-Let's say we want to monitor outgoing traffic to Firestore. To do this, we'll add an Istio [ServiceEntry](https://istio.io/docs/reference/config/networking/v1alpha3/service-entry/) corresponding to the hostname of the [Firestore API](https://cloud.google.com/firestore/docs/reference/rpc/).
+Firestoreへの送信トラフィックを監視するとします。これを行うには、[Firestore API](https://cloud.google.com/firestore/docs/reference/rpc/)のホスト名に対応するIstio [ServiceEntry](https://istio.io/docs/reference/config/networking/service-entry/)を追加します。
 
 ```YAML
 apiVersion: networking.istio.io/v1alpha3
@@ -36,17 +36,17 @@ spec:
   resolution: DNS
 ```
 
-From here, we can see Firestore appear in Istio's [service graph](https://istio.io/docs/tasks/telemetry/kiali/).
+ここから、Istioの[サービスグラフ](https://istio.io/docs/tasks/observability/kiali/)にFirestoreが表示されます。
 
 ![kiali](/images/databases-kiali-no-vs.png)
 
-Note that the traffic appears as TCP because the sidecar proxy for `plants` is receiving the firestore TLS traffic [as plain TCP](https://github.com/istio/istio/issues/14933). The edge of the graph denote the number of request throughput to Firestore, in bits per second.
+`plants` のサイドカープロキシがFirestore TLSトラフィックを [プレーンなTCPとして](https://github.com/istio/istio/issues/14933)受信しているため、トラフィックはTCPとして表示されることに注意してください。グラフの先頭は、Firestoreへのリクエストスループットの値をビット/秒で示しています。
 
-Now let's say we want to test `plants`'s behavior when it cannot connect to the database. We can do this with Istio, without changing any application code.
+ここで、データベースに接続できない場合の `plants` の動作をテストするとします。アプリケーションコードを変更せずに、Istioで行えます。
 
-While Istio currently does not support TCP fault injection, what we can do is create a [TCP traffic rule](https://istio.io/docs/reference/config/networking/v1alpha3/virtual-service/#TCPRoute) to send firestore API traffic to another "black hole" service, effectively breaking the client connection to Firestore.
+Istioは現在TCPフォールトインジェクションをサポートしていませんが、Firestore APIトラフィックを別の「ブラックホール」サービスに送信する[TCPトラフィックルール](https://istio.io/docs/reference/config/networking/virtual-service/#TCPRoute)を作成して、Firestoreへのクライアント接続を効果的に切断することができます。
 
-To do this, we can deploy a small `echo` service inside the cluster, and forward all `firestore` traffic to the `echo` service instead:
+これを行うには、クラスター内に小さな `echo` サービスをデプロイして、Firestoreへの全トラフィックを `echo` サービスに転送します。:
 
 ```YAML
 apiVersion: networking.istio.io/v1alpha3
@@ -64,7 +64,7 @@ spec:
           number: 80
 ```
 
-When we apply this Istio VirtualService to the cluster, the `plants` logs report errors:
+このIstio VirtualServiceをクラスターに適用すると、`plants` ログにエラーが報告されます。:
 
 
 ```bash
@@ -72,8 +72,8 @@ writing a new plant to Firestore...
 🚫 Failed adding plant: rpc error: code = Unavailable desc = all SubConns are in TransientFailure
 ```
 
-And in the service graph, we can see that the `firestore` node has a purple `VirtualService` icon, meaning we've applied an Istio traffic rule against that service. Eventually, throughput to firestore will appear as `0` over the last minute, since we've redirected all outgoing connections to the database.
+そして、サービスグラフでは、`firestore` ノードに紫色の `VirtualService` アイコンがあることがわかります。これは、そのサービスに対してIstioトラフィックルールを適用したことを意味します。データベースへの全ての外部接続をリダイレクトしたため、やがて直近1分間のFirestoreのスループットは `0` になります。
 
 ![kiali](/images/databases-kiali.png)
 
-Note that you can also use Istio to manage traffic for databases *inside* the cluster, including Redis, SQL, and [MongoDB](https://istio.io/blog/2018/egress-mongo/). See the Istio docs to learn more.
+Istioで、Redis、SQL、[MongoDB](https://istio.io/blog/2018/egress-mongo/)など、クラスター内のデータベースのトラフィックを管理することもできます。詳細については、Istio docsをご覧ください。
