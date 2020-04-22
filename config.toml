@@ -1,5 +1,5 @@
 baseURL = "/"
-title = "Istio By Example"
+title = "Istio By Example (ja)"
 theme = "hugo-notepadium"
 copyright = ""
 relativeURLs = true # use relative path at images in markdown
