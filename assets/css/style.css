@@ -321,8 +321,9 @@ strong {
 }
 
 .header p {
-  margin: 0;
+  margin: 10px 0;
   line-height: 1;
+  font-size: 15px;
 }
 
 .nav {
