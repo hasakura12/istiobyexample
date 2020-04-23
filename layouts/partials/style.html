@@ -63,4 +63,4 @@
 {{- end -}}
 
 {{- $coreCSS = slice $coreCSS $syntaxCSS | resources.Concat "css/core.css" | minify | fingerprint "sha384" -}}
-<link rel="stylesheet" href="{{- $coreCSS.RelPermalink | relURL -}}" integrity="{{- $coreCSS.Data.Integrity -}}">
+<link rel="stylesheet" href="{{- $coreCSS.RelPermalink | absURL -}}" integrity="{{- $coreCSS.Data.Integrity -}}">
