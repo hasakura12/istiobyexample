@@ -1,4 +1,4 @@
-baseURL = "/"
+baseURL = "https://istiobyexample-ja.github.io/istiobyexample/"
 title = "Istio By Example (ja)"
 theme = "hugo-notepadium"
 copyright = ""
@@ -24,8 +24,7 @@ unsafe = true  # enable raw HTML in Markdown
 logo = "/images/istio-logo.png"  # if you have a logo png
 slogan = ""
 license = ""  # CC License
-images = ["images/istio-framed.jpg"]
-description = "The examples highlighting various Istio features."
+images = ["images/opengraph.png"] # for og/twitter_card
 
 [params.syntax]
 use = "chroma"  # builtin: "prismjs", "hljs". "none" means Chroma
