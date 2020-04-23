@@ -13,7 +13,7 @@
 {{ else -}}
 {{- with $.Site.Params.images -}}
 {{- $image := index . 0 -}}
-<meta property="og:image" content="{{ $image | absURL }}"/>
+<meta property="og:image" content="{{ $.Site.BaseURL }}{{ $image }}"/>
 {{ end }}{{ end }}{{ end }}
 
 {{- $iso8601 := "2006-01-02T15:04:05-07:00" -}}
