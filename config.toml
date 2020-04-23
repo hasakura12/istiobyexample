@@ -25,6 +25,7 @@ logo = "/images/istio-logo.png"  # if you have a logo png
 slogan = ""
 license = ""  # CC License
 images = ["images/opengraph.png"] # for og/twitter_card
+description = "本サイトは Istio By Example を和訳したものであり，Istioの多彩な機能をユースケースベースで紹介しています。"
 
 [params.syntax]
 use = "chroma"  # builtin: "prismjs", "hljs". "none" means Chroma
