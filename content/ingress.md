@@ -4,22 +4,24 @@ publishDate: "2019-12-31"
 categories: ["Traffic Management"]
 ---
 
-Ingress traffic refers to traffic entering the mesh from outside the cluster. Kubernetes [provides](https://kubernetes.io/docs/concepts/services-networking/service/#loadbalancer) [ways](https://kubernetes.io/docs/concepts/services-networking/ingress/) to handle ingress traffic. With Istio, you can instead manage ingress traffic with a **Gateway**.
+Ingress Trafficは、クラスター外からメッシュへ入ってくるトラフィックのことを指します。 Kubernetes は Ingress Traffic を扱う方法を [LoadBalancer タイプ](https://kubernetes.io/ja/docs/concepts/services-networking/service/#loadbalancer) や [Ingress](https://kubernetes.io/ja/docs/concepts/services-networking/ingress/) 
+で提供しています。
+Istio では、代わりに **Gateway** で ingress traffic を管理することができます。
 
-A [Gateway](https://istio.io/docs/reference/config/networking/v1alpha3/gateway/) is a standalone set of Envoy proxies that load-balance inbound traffic. Istio deploys a default `IngressGateway` with a public IP address, which you can configure to expose applications inside your service mesh to the Internet.
+[Gateway](https://istio.io/docs/reference/config/networking/v1alpha3/gateway/) はクラスターへ到着するトラフィックのロードバランシングを担う Envoy プロキシです。Istio はパブリックIPを持ったデフォルトの `IngressGateway` をデプロイします。これを使用することで、サービスメッシュ内のアプリケーションをインターネットに公開することができます。
 
-Istio Gateways have two key advantages over traditional Kubernetes Ingress. Because a Gateway is another Envoy proxy, you can use Istio to configure Gateway traffic in the same way you would configure east-west traffic between services (traffic splitting, redirects, retry logic).
+Istio の Gateway は Kubernetes の Igress に比べて２つの点で優れています。 Gateway は Envoy プロキシです。そのため Istio を使用することで、 East-West トラフィック(トラフィックスプリットやリダイレクト、リトライなど) を扱うのと同じ方法で Gateway トラフィックを設定することができます。
 
-Gateways also forward metrics (request rate, error rate) just like [sidecar](https://istio.io/docs/concepts/what-is-istio/#envoy) proxies, allowing you to view Ingress traffic in [a service graph](https://istio.io/docs/tasks/telemetry/kiali/#generating-a-service-graph), and set fine-grained [SLOs](https://landing.google.com/sre/sre-book/chapters/service-level-objectives/) on frontend services directly serving clients.
+また Gateways は、[サイドカー](https://istio.io/docs/concepts/what-is-istio/#envoy) と同じようにリクエストレートやエラーレートなどのメトリクスを転送します。これにより[サービスグラフ](https://istio.io/docs/tasks/telemetry/kiali/#generating-a-service-graph)でIngress Trafficを見ることや、クライアントに直接配信しているフロントエンドサービスの細かい[SLOs](https://landing.google.com/sre/sre-book/chapters/service-level-objectives/)を設定することができます。
 
-Let's see Gateways in action.
+では実際に Gateways を見てみましょう。
 
 
 ![ingress](/images/ingress.png)
 
-Here, the `hello` application runs in a container, inside a Pod. The Pod has an injected Istio sidecar proxy container. A Kubernetes Service called `hello` fronts this Pod. We want to direct inbound traffic from `hello.com` to the `hello` Service.
+ここでは `hello` アプリケーションが Pod 内のコンテナとして動いています。Pod には Istio のサイドカープロキシが挿入されています。`hello` という Kubernetes のサービスがこの Pod に向けられています。`hello.com` から入ってくるトラフィックをこの `hello` サービスに向けたいと思います。
 
-First we need a `Gateway` resource, which opens port `80` in the default Istio `IngressGateway`, for all hosts resolving from the `hello.com` domain.
+まず Istio デフォルトの `IngressGateway` 内に `hello.com` ドメインから名前解決された ポート `80` を開放する `Gateway` リソースが必要です。
 
 ```YAML
 apiVersion: networking.istio.io/v1alpha3
@@ -28,7 +30,7 @@ metadata:
   name: hello-gateway
 spec:
   selector:
-    istio: ingressgateway # use the default IngressGateway
+    istio: ingressgateway # デフォルトの IngressGateway を使用します
   servers:
   - port:
       number: 80
@@ -38,9 +40,9 @@ spec:
     - "hello.com"
 ```
 
-(**Note**: on your own, you'll still have to resolve the DNS for that host to the Istio `IngressGateway` external IP address.)
+(**注意**: `IngressGateway` の外部IPアドレスに対しては自身でDNSの名前解決をする必要があります。
 
-Second, we need a [`VirtualService`](https://istio.io/docs/tasks/traffic-management/ingress/ingress-control/) to direct traffic from the `IngressGateway` to the `hello` backend Service, running in the `default` namespace on port `80`.
+次に `IngressGateway` から `default` の名前空間にポート `80` で動いている `hello` のバックエンドサービスにトラフィックを向ける [`VirtualService`](https://istio.io/docs/tasks/traffic-management/ingress/ingress-control/) を用意します。
 
 ```YAML
 apiVersion: networking.istio.io/v1alpha3
