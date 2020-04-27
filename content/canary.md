@@ -5,7 +5,7 @@ categories: ["Traffic Management"]
 ---
 
 
-カナリアデプロイメントは、新しいバージョンのサービスを安全に展開するための手法です。Istioを使うと、パーセント指定の[トラフィック分岐](https://istio.io/docs/concepts/traffic-management/#routing-versions)により、少量のトラフィックのみを新しいバージョンに誘導できます。その後、新しいバージョンに対し，[カナリア分析](https://cloud.google.com/blog/products/devops-sre/canary-analysis-lessons-learned-and-best-practices-from-google-and-waze)（レイテンシやエラー率のチェックなど）を実行しつつ、最終的に新しいバージョンが全てのトラフィックを受け付けるようになるまで、段階的にトラフィックを新しいバージョンに誘導することが可能です。
+カナリアデプロイメントは、新しいバージョンのサービスを安全に展開するための手法です。Istioを使うと、指定したパーセント指定で[トラフィック分割](https://istio.io/docs/concepts/traffic-management/#routing-versions)を行うことにより、新しいバージョンに対し，少量のトラフィックのみを流すことができます。その後、新しいバージョンに対し，[カナリア分析](https://cloud.google.com/blog/products/devops-sre/canary-analysis-lessons-learned-and-best-practices-from-google-and-waze)（レイテンシやエラー率のチェックなど）を実行しつつ、最終的に新しいバージョンが全てのトラフィックを受け付けるようになるまで、段階的にトラフィックを新しいバージョンに流していくことが可能です。
 
 ![Diagram](/images/canary_diagram.png)
 
