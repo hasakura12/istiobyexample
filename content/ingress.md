@@ -10,7 +10,7 @@ Istio では、代わりに **Gateway** で Ingress トラフィック を管理
 
 [Gateway](https://istio.io/docs/reference/config/networking/v1alpha3/gateway/) はクラスターへ到着するトラフィックのロードバランシングを担う Envoy プロキシです。Istio はパブリックIPを持ったデフォルトの `IngressGateway` をデプロイします。これを使用することで、サービスメッシュ内のアプリケーションをインターネットに公開することができます。
 
-Istio の Gateway は Kubernetes の Igress に比べて２つの点で優れています。 Gateway は Envoy プロキシです。そのため Istio を使用することで、 East-West トラフィック(トラフィックスプリットやリダイレクト、リトライなど) を扱うのと同じ方法で Gateway トラフィックを設定することができます。
+Istio の Gateway は Kubernetes の Igress に比べて２つの点で優れています。 Gateway は Envoy プロキシです。そのため Istio を使用することで、 East-West トラフィックと同じように Gateway トラフィックを扱うことができます(トラフィックスプリットやリダイレクト、リトライなど)。
 
 また Gateways は、[サイドカー](https://istio.io/docs/concepts/what-is-istio/#envoy) と同じようにリクエストレートやエラーレートなどのメトリクスを転送します。これにより[サービスグラフ](https://istio.io/docs/tasks/telemetry/kiali/#generating-a-service-graph)でIngress トラフィックを見ることや、クライアントに直接配信しているフロントエンドサービスの細かい[SLOs](https://landing.google.com/sre/sre-book/chapters/service-level-objectives/)を設定することができます。
 
