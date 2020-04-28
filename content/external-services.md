@@ -4,7 +4,7 @@ publishDate: "2019-12-31"
 categories: ["Traffic Management"]
 ---
 
-[service mesh](https://istio.io/docs/concepts/what-is-istio/#what-is-a-service-mesh) はよく1つの環境 - 例えば、1つの Kubernetes Cluster - 全体に及びます。また、その環境で接続されているすべてのサービスがメッシュの管理ドメインを形成し、そこからメトリクスを見たりポリシーを設定できます。
+[service mesh](https://istio.io/docs/concepts/what-is-istio/#what-is-a-service-mesh) はよく1つの環境 - 例えば、1つの Kubernetes クラスタ - 全体に及びます。また、その環境で接続されているすべてのサービスがメッシュの管理ドメインを形成し、そこからメトリクスを見たりポリシーを設定できます。
 
 しかし、クラスタの**外部**でもサービスを実行している場合や、外部 API に依存している場合はどうでしょうか。
 
