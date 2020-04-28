@@ -14,7 +14,7 @@ categories: ["Traffic Management"]
 
 ![external currency service](/images/ext-currency.png)
 
-ここでは `currency` サービスを備えたグローバルストアウェブサイトを実行しており、ユーザの居住時に基づいて商品の価格を変換します。サードパーティの通過変換 API である [ヨーロッパ中央銀行](https://www.ecb.europa.eu/stats/policy_and_exchange_rates/euro_reference_exchange_rates/html/index.en.html) を使用して、リアルタイムの為替を提供しています。
+ここではユーザの居住地に基づいて商品の価格を変換する `currency` サービスを備えた、グローバルの EC サイトを動かしています。サードパーティの通過変換 API である [ヨーロッパ中央銀行](https://www.ecb.europa.eu/stats/policy_and_exchange_rates/euro_reference_exchange_rates/html/index.en.html) を使用して、リアルタイムの為替を提供しています。
 
 メッシュ内のサービスからこの外部 API へのすべての読み出しに3秒のタイムアウトを設定します。これを行うには、2つの Istio リソースが必要です。
 
