@@ -8,7 +8,7 @@ categories: ["Traffic Management"]
 
 しかし、クラスタの**外部**でもサービスを実行している場合や、外部 API に依存している場合はどうでしょうか。
 
-恐れることはありません。Istio は [`ServiceEntry`](https://istio.io/docs/concepts/traffic-management/#service-entries) と呼ばれるリソースを提供します。これにより、それがあなたの所有するサービスでなくても外部サービスを論理的にあなたのメッシュへ取り込むことができます。
+心配は要りません。Istio は [`ServiceEntry`](https://istio.io/docs/concepts/traffic-management/#service-entries) と呼ばれるリソースを提供します。これにより、それがあなたの所有するサービスでなくても外部サービスを論理的にあなたのメッシュへ取り込むことができます。
 
 外部ホスト名の ServiceEntry を作成すると、その外部サービスに到達するまでのメトリクスとトレースを表示できます。これらの外部サービスに[リトライロジック](/retry/)などのトラフィックポリシーを設定することもできます。`ServiceEntries` を追加すると、Istio 管理ドメインの範囲が効果的に広がります。例を見てみましょう。
 
