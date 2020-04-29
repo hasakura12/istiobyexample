@@ -55,7 +55,7 @@ spec:
         weight: 100
 ```
 
-通貨 API の ServiceEntry を作成すると、[Kiali service graph](https://istio.io/docs/tasks/telemetry/kiali/) に自動的に `ecb.europa.eu` が表示されます。（そしてすぐに**誰か**がそれを呼んでいるかを知ります）
+通貨 API の ServiceEntry を作成すると、[Kiali service graph](https://istio.io/docs/tasks/telemetry/kiali/) に自動的に `ecb.europa.eu` が表示されます。（そして，**誰か**がそれを呼んでいるのかすぐ知ることができます）
 
 ![service graph](/images/ext-servicegraph.png)
 
