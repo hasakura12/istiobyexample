@@ -59,7 +59,7 @@ spec:
 
 ![service graph](/images/ext-servicegraph.png)
 
-また、この外部サービスのための [Grafana dashboard](https://istio.io/docs/tasks/telemetry/metrics/using-istio-dashboard/) も自動的に取得して、レスポンスコードやレイテンシなどのデータを表示します。
+また、この外部サービスのレスポンスコードやレイテンシなどのデータを表示する [Grafana dashboard](https://istio.io/docs/tasks/telemetry/metrics/using-istio-dashboard/) もあります。
 
 ![grafana](/images/ext-grafana.png)
 
