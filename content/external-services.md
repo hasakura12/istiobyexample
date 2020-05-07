@@ -1,5 +1,5 @@
 ---
-title: External Services
+title: 外部サービス
 publishDate: "2019-12-31"
 categories: ["Traffic Management"]
 ---

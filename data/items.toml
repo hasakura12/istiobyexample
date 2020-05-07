@@ -14,7 +14,7 @@ thumb = "/images/t-ingress.png"
 url = "/ingress"
 
 [[traffic]]
-title = "External Services"
+title = "外部サービス"
 thumb = "/images/t-currency.png"
 url = "/external-services"
 
